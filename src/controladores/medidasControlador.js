@@ -16,14 +16,6 @@ class MedidasControlador {
        *
        * @return {text} JSON con las medidas
        * 
-       * Ejemplo de objeto medida:
-       * {
-            "valor":222,
-            "latitud":"-0.24263245",
-            "longitud":"-0.4252626",
-            "fecha":"2021-10-17 12:34:14.000000",
-            "sensor_id":12345
-            }
        */
       static obtenerTodasLasMedidas() {
             // Recibe las medidas
@@ -85,14 +77,6 @@ class MedidasControlador {
        * @param {text} json con los datos de la medida
        * @return {text} JSON con la medida
        * 
-       * Ejemplo de objeto medida:
-       * {
-            "valor":222,
-            "latitud":"-0.24263245",
-            "longitud":"-0.4252626",
-            "fecha":"2021-10-17 12:34:14.000000",
-            "sensor_id":12345
-            }
        */
       static guardarMedida(medida) {
             

@@ -23,13 +23,15 @@ const routes = Router();
  * 
  * GET /medidas
  * Ejemplo de objeto medida:
-       * {
-            "valor":222,
-            "latitud":"-0.24263245",
-            "longitud":"-0.4252626",
-            "fecha":"2021-10-17 12:34:14.000000",
-            "sensor_id":12345
-            }
+  {
+    "id":1,
+    "nodo":32,
+    "tiempo":1635496134293,
+    "tipo":2,
+    "latitud":32.43635,
+    "longitud":-0.3526,
+    "valor":43
+  }
  */
 routes.get('/medidas', async (request, response) => {
     // Recibe las medidas
@@ -72,15 +74,6 @@ routes.get('/medida/ultima', async (request, response) => {
  * @return {text} JSON con la medida enviada
  * 
  * POST /medida
- * 
- * Ejemplo de objeto medida:
-       * {
-            "valor":222,
-            "latitud":"-0.24263245",
-            "longitud":"-0.4252626",
-            "fecha":"2021-10-17 12:34:14.000000",
-            "sensor_id":12345
-            }
  */
 routes.post('/medida', async (request, response) => {
         // Recibe los sensores
