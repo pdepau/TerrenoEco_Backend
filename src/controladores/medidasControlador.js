@@ -8,16 +8,16 @@ import pool from '../dbconfig.js';
 
 class MedidasControlador {
       // -----------------------------------------------------------------
-      //#region obtener
+      //#region get
       // -----------------------------------------------------------------
       /**
-       * obtenerTodasLasMedidas -> [JSON]
+       * getTodasLasMedidas -> [JSON]
        * Devuelve un JSON con todas las medidas
        *
        * @return {text} JSON con las medidas
        * 
        */
-      static obtenerTodasLasMedidas() {
+      static getTodasLasMedidas() {
             // Recibe las medidas
             return new Promise(result => {
 
@@ -37,13 +37,13 @@ class MedidasControlador {
             });
       }
       /**
-       * obtenerUltimaMedida -> [JSON]
+       * getUltimaMedida -> [JSON]
        * Devuelve un JSON con la ultima medida
        *
        * @return {text} JSON con la medida
        * 
        */
-      static obtenerUltimaMedida() {
+      static getUltimaMedida() {
             // Recibe la medida
             return new Promise(result => {
 
@@ -67,10 +67,10 @@ class MedidasControlador {
       //#endregion
       // -----------------------------------------------------------------
       // -----------------------------------------------------------------
-      //#region guardar
+      //#region post
       // -----------------------------------------------------------------
       /**
-       * medida:Medida -> guardarMedida() -> respuesta:JSON
+       * medida:Medida -> postMedida() -> respuesta:JSON
        * 
        * Crea una nueva medida en la base de datos con los datos recibidos
        *
@@ -78,7 +78,7 @@ class MedidasControlador {
        * @return {text} JSON con la medida
        * 
        */
-      static guardarMedida(medida) {
+      static postMedida(medida) {
             
             return new Promise(result => {
                   
