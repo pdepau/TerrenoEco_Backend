@@ -15,24 +15,24 @@ describe("Medidas", () => {
     describe("GET /", () => {
         // Test para recibir todas las medidas
         it("deberia recibir todas las medidas", (done) => {
-             chai.request(app)
-                 .get('/medidas')
-                 .end((err, res) => {
-                     res.should.have.status(200);
-                     res.body.should.be.a('array');
-                     done();
-                  });
+            chai.request(app)
+                .get('/medidas')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    done();
+                });
         });
         // Test para recibir un usuario
         it("deberia recibir un solo usuario", (done) => {
-             const id = 2;
-             chai.request(app)
-                 .get(`/usuario/${id}`)
-                 .end((err, res) => {
-                     res.should.have.status(200);
-                     res.body.should.be.a('array');
-                     done();
-                  });
+            const id = 2;
+            chai.request(app)
+                .get(`/usuario/${id}`)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    done();
+                });
         });
          
         // Test para recibir los sensores de un usuario
@@ -44,9 +44,8 @@ describe("Medidas", () => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
                     done();
-                    });
+                });
         });
-
         // Test para crear una medida
         it("deberia crear una medida", (done) => {
             const res = "{"+
@@ -62,7 +61,28 @@ describe("Medidas", () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     done();
-                    });
+                });
+       });
+    });
+});
+
+describe("Usuarios", () => {
+    describe("POST /", () => {
+        // Test para crear una medida
+        it("deberia crear un usuario", (done) => {
+            const res = "{"+
+                '"id":222,'+
+                '"telefono":"868493778",'+
+                '"nombre":"Prueba",'+
+                '"password":"1999",'+
+            "}";
+            chai.request(app)
+                .post(`/usuario`)
+                .send(JSON.parse(res))
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    done();
+                });
        });
     });
 });
