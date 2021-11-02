@@ -7,7 +7,38 @@
 import pool from '../dbconfig.js';
 
 class usuariosControlador {
-// -----------------------------------------------------------------
+      // -----------------------------------------------------------------
+      //#region get
+      // -----------------------------------------------------------------
+      /**
+       * getUsuario -> [JSON]
+       * Devuelve un JSON con el usuario
+       *
+       * @return {text} JSON con el usuario
+       * 
+       */
+       static getUsuario() {
+            return new Promise(result => {
+
+                  var queryString = "SELECT * FROM usuario;";
+
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }
+      // -----------------------------------------------------------------
+      //#endregion
+      // -----------------------------------------------------------------
+      // -----------------------------------------------------------------
       //#region post
       // -----------------------------------------------------------------
       /**
