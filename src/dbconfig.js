@@ -4,7 +4,16 @@ const pool = mysql.createPool({
     host : "127.0.0.1",
     user : "root",
     password : "",
-    database : "biometric_database"
+    database : "eco_terreno"
 });
 
-export default pool;
+const medicion = "medida";
+const usuario = "usuario";
+const nodo_estado = "estado";
+const medalla = "medalla";
+const nodo = "nodo";
+const sitio = "sitio";
+const medicion_tipo = "tipo";
+const usuario_medalla = "usuario_medalla";
+
+export {pool, medicion, usuario, nodo_estado, medalla, nodo, sitio, medicion_tipo, usuario_medalla};

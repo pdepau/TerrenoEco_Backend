@@ -4,23 +4,26 @@
 // Creado: 31/10/2021
 // -----------------------------------------------------------------
 
-import pool from '../dbconfig.js';
+import {pool, usuario} from '../dbconfig.js';
 
 class usuariosControlador {
       // -----------------------------------------------------------------
       //#region get
       // -----------------------------------------------------------------
       /**
-       * getUsuario -> [JSON]
+       * id:Z
+       *                obtenerUsuario()
+       * [JSON] <-
+       * 
        * Devuelve un JSON con el usuario
        *
-       * @return {text} JSON con el usuario
+       * @return {promise} promesa de los datos de usuario
        * 
        */
-       static getUsuario() {
+      static obtenerUsuario(id) {
             return new Promise(result => {
 
-                  var queryString = "SELECT * FROM usuario;";
+                  var queryString = "SELECT * FROM "+usuario+" WHERE "+usuario+".ID='"+id+"';";
 
                   pool.getConnection((err, connection) => {
                         if(err) throw err;
@@ -42,34 +45,97 @@ class usuariosControlador {
       //#region post
       // -----------------------------------------------------------------
       /**
-       * usuario:Usuario -> postUsuario() -> respuesta:JSON
+       * usuario:Usuario -> 
+       *                crearUsuario() -> 
+       * respuesta:JSON <-
        * 
        * Crea una nueva usuario en la base de datos con los datos recibidos
        *
        * @param {text} json con los datos de la usuario
-       * @return {text} JSON con la usuario
+       * @return {promise} promesa de los datos
        * 
        */
-       static postUsuario(usuario) {
-            
-        return new Promise(result => {
-              
-              // ID es NULL porque la base da datos lo asigna como valor autoincremental
-              const queryString = "INSERT INTO `usuarios` (`ID`, `Nombre`, `Telefono`, `Password`) VALUES (NULL, '"+usuario.nombre+"', '"+usuario.telefono+"', '"+usuario.password+"');"
+      static crearUsuario(json) {
+            return new Promise(result => {
+                  
+                  // ID es NULL porque la base da datos lo asigna como valor autoincremental
+                  const queryString = "INSERT INTO `"+usuario+"` (`ID`, `nombre`, `telefono`, `password`) VALUES (NULL, '"+json.nombre+"', '"+json.telefono+"', '"+json.password+"');"
 
-              pool.getConnection((err, connection) => {
-                    if(err) throw err;
-                    console.log('connected as id ' + connection.threadId);
-                    connection.query(queryString, (err, rows) => 
-                    {
-                          connection.release(); // devuelve la conexion al pool
-                          // Si hay un error devuelve el error
-                          if(err) throw err;
-                          result(rows);
-                    });
-              });
-        });
-  }
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }   
+
+      /**
+       * usuario:Usuario -> 
+       *                actualizarUsuario() ->
+       * json <- 
+       * 
+       * Actualiza un usuario en la base de datos con los datos recibidos
+       *
+       * @param {text} json con los datos de la usuario
+       * @return {promise} promesa con la respuesta
+       * 
+       */
+      static actualizarUsuario(json) {
+            return new Promise(result => {
+                  
+                  // ID es NULL porque la base da datos lo asigna como valor autoincremental
+                  const queryString = "UPDATE `"+usuario+"` SET `nombre` = '"+json.nombre+"', `telefono` = '"+json.telefono+"', `password` = '"+json.password+"' WHERE `"+usuario+"`.`ID` = "+json.id+";"
+
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }
+
+      /**
+       * id:Z -> 
+       *                borrarUsuario() ->
+       * json <- 
+       * 
+       * Actualiza un usuario en la base de datos con los datos recibidos
+       *
+       * @param {Z} id del usuario
+       * @return {promise} promesa con la respuesta
+       * 
+       */
+      static borrarUsuario(id) {
+            return new Promise(result => {
+                  
+                  // ID es NULL porque la base da datos lo asigna como valor autoincremental
+                  const queryString = "DELETE FROM `"+usuario+"` WHERE `"+usuario+"`.`ID` = "+json.id+""
+
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }
   // -----------------------------------------------------------------
   //#endregion
   // -----------------------------------------------------------------

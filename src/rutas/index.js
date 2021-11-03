@@ -6,24 +6,22 @@
 // -----------------------------------------------------------------
 
 import { Router } from 'express';
-import MedidasControlador from '../controladores/medidasControlador.js';
-import UsuariosControlador from '../controladores/usuariosControlador.js';
+import MedicionesControlador from '../controladores/MedicionesControlador.js';
+import UsuariosControlador from '../controladores/UsuariosControlador.js';
 import "babel-polyfill"; //regeneratorRuntime error fix
+import NodosControlador from '../controladores/NodosControlador.js';
 var bodyParser = require('body-parser');
 const routes = Router();
-// -----------------------------------------------------------------
-//#region GET
-// -----------------------------------------------------------------
 /**
  * 
- * Recibe todas las medidas de la base de datos
+ * Recibe todas las Mediciones de la base de datos
  *
  * @param {text} URL
  * @param {text} callback function
- * @return {text} JSON con las medidas
+ * @return {text} JSON con las Mediciones
  * 
- * GET /medidas
- * Ejemplo de objeto medida:
+ * GET /Mediciones
+ * Ejemplo de objeto medicion:
   {
     "id":1,
     "nodo":32,
@@ -34,30 +32,13 @@ const routes = Router();
     "valor":43
   }
  */
-routes.get('/medidas', async (request, response) => {
-  // Recibe las medidas
-  const medidas = await MedidasControlador.getTodasLasMedidas();
+routes.get('/mediciones', async (request, response) => {
+  // Recibe las Mediciones
+  const Mediciones = await MedicionesControlador.obtenerTodasLasMediciones();
   // Se asegura de que no haya errores
-  if(!medidas) response.status(404).send(`No hay medidas`);
-  // Devuelve la lista de medidas
-  response.send(medidas);
-});
-
-/**
- * Recibe la ultima medida de la base de datos
- *
- * @param {text} URL
- * @param {text} callback function
- * @return {text} JSON con las medidas
- * 
- */
-routes.get('/medida/ultima', async (request, response) => {
-  // Recibe las medidas
-  const medidas = await MedidasControlador.getUltimaMedida();
-  // Se asegura de que no haya errores
-  if(!medidas) response.status(404).send(`No hay medidas`);
-  // Devuelve la lista de medidas
-  response.send(medidas);
+  if(!Mediciones) response.status(404).send(`No hay Mediciones`);
+  // Devuelve la lista de Mediciones
+  response.send(Mediciones);
 });
 
 // -----------------------------------------------------------------
@@ -68,22 +49,40 @@ routes.get('/medida/ultima', async (request, response) => {
 // -----------------------------------------------------------------
 /**
  * 
- * Envia una medida a la base de datos para añadirla
+ * Envia una medicion a la base de datos para añadirla
  *
  * @param {text} URL
  * @param {text} callback function
- * @return {text} JSON con la medida enviada
+ * @return {text} JSON con la medicion enviada
  * 
- * POST /medida
+ * POST /medicion
  */
-routes.post('/medida', async (request, response) => {
+routes.post('/medicion', async (request, response) => {
   // Recibe los sensores
-  const medida = await MedidasControlador.postMedida(request.body);
+  const medicion = await MedicionesControlador.crearMedicion(request.body);
   // Se asegura de que no haya errores
-  if(!medida) response.status(404).send(`No se ha creado la medida`);
+  if(!medicion) response.status(404).send(`No se ha creado la medicion`);
   // Devuelve la lista de sensores
-  response.send(medida);
+  response.send(medicion);
 });
+
+/**
+ * 
+ * Recibe un usuario de la base de datos
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con el usuario
+ * 
+ */
+  routes.get('/usuario/:id', async (request, response) => {
+    // Recibe las Mediciones
+    const Mediciones = await UsuariosControlador.obtenerUsuario(request.id);
+    // Se asegura de que no haya errores
+    if(!Mediciones) response.status(404).send(`No hay Mediciones`);
+    // Devuelve la lista de Mediciones
+    response.send(Mediciones);
+  });
 
 /**
  * Envia un usuario a la base de datos para añadirla
@@ -102,15 +101,76 @@ routes.post('/medida', async (request, response) => {
  */
 routes.post('/usuario', async (request, response) => {
   // Recibe los sensores
-  const usuario = await UsuariosControlador.postUsuario(request.body);
+  const usuario = await UsuariosControlador.crearUsuario(request.body);
   // Se asegura de que no haya errores
   if(!usuario) response.status(404).send(`No se ha creado el usuario`);
   // Devuelve la lista de sensores
   response.send(usuario);
 });
 
-// -----------------------------------------------------------------
-//#endregion
-// -----------------------------------------------------------------
+/**
+ * Envia un usuario a la base de datos para editarla
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con el usuario enviado
+ * 
+ * PUT /usuario
+ *{
+    "id":1,
+    "telefono":4532156266,
+    "nombre":"Yo Al",
+    "password":"1635496033293"
+  }
+ */
+routes.put('/usuario', async (request, response) => {
+  // Recibe los sensores
+  const usuario = await UsuariosControlador.actualizarUsuario(request.body);
+  // Se asegura de que no haya errores
+  if(!usuario) response.status(404).send(`No se ha encontrado el usuario`);
+  // Devuelve la lista de sensores
+  response.send(usuario);
+});
+
+/**
+ * Borra un usuario de la base de datos
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con el usuario enviado
+ * 
+ * DELETE /usuario
+ */
+routes.delete('/usuario/:id', async (request, response) => {
+  // Recibe los sensores
+  const usuario = await UsuariosControlador.borrarUsuario(request.id);
+  // Se asegura de que no haya errores
+  if(!usuario) response.status(404).send(`No se ha encontrado el usuario`);
+  // Devuelve la lista de sensores
+  response.send(usuario);
+});
+
+/**
+ * Crea un nodo en la base de datos
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con el nodo enviado
+ * 
+ * POST /nodo
+ * {
+      "usuario":"1",
+      "estado":"1"
+  }
+ */
+ routes.post('/nodo', async (request, response) => {
+  // Recibe los sensores
+  const nodo = await NodosControlador.crearNodo(request.body);
+  // Se asegura de que no haya errores
+  if(!nodo) response.status(404).send(`No se ha creado el nodo`);
+  // Devuelve la lista de sensores
+  response.send(nodo);
+});
+
 
 export default routes;
