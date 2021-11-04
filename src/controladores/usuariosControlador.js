@@ -7,9 +7,6 @@
 import {pool, usuario} from '../dbconfig.js';
 
 class usuariosControlador {
-      // -----------------------------------------------------------------
-      //#region get
-      // -----------------------------------------------------------------
       /**
        * id:Z
        *                obtenerUsuario()
@@ -38,12 +35,32 @@ class usuariosControlador {
                   });
             });
       }
-      // -----------------------------------------------------------------
-      //#endregion
-      // -----------------------------------------------------------------
-      // -----------------------------------------------------------------
-      //#region post
-      // -----------------------------------------------------------------
+      /**
+       *                obtenerUltimoUsuario()
+       * Usuario <-
+       * Devuelve un JSON con el ultimo usuario
+       *
+       * @return {promise} promesa de JSON con los datos
+       * 
+       */
+       static obtenerUltimoUsuario() {
+            return new Promise(result => {
+
+                  var queryString = "SELECT MAX(ID) as id, nombre, telefono valor FROM "+usuario+";";
+
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }
       /**
        * usuario:Usuario -> 
        *                crearUsuario() -> 
@@ -57,10 +74,9 @@ class usuariosControlador {
        */
       static crearUsuario(json) {
             return new Promise(result => {
-                  
-                  // ID es NULL porque la base da datos lo asigna como valor autoincremental
-                  const queryString = "INSERT INTO `"+usuario+"` (`ID`, `nombre`, `telefono`, `password`) VALUES (NULL, '"+json.nombre+"', '"+json.telefono+"', '"+json.password+"');"
 
+                  const queryString = "INSERT INTO `"+usuario+"` (`ID`, `nombre`, `telefono`, `password`) VALUES ('NULL', '"+json.nombre+"', '"+json.telefono+"', '"+json.password+"');"
+                  
                   pool.getConnection((err, connection) => {
                         if(err) throw err;
                         console.log('connected as id ' + connection.threadId);
@@ -121,7 +137,7 @@ class usuariosControlador {
             return new Promise(result => {
                   
                   // ID es NULL porque la base da datos lo asigna como valor autoincremental
-                  const queryString = "DELETE FROM `"+usuario+"` WHERE `"+usuario+"`.`ID` = "+json.id+""
+                  const queryString = "UPDATE `"+usuario+"` SET `nombre` = '', `telefono` = '', `password` = '' WHERE `"+usuario+"`.`ID` = "+id+";"
 
                   pool.getConnection((err, connection) => {
                         if(err) throw err;
@@ -136,9 +152,6 @@ class usuariosControlador {
                   });
             });
       }
-  // -----------------------------------------------------------------
-  //#endregion
-  // -----------------------------------------------------------------
 }
 
 export default usuariosControlador;

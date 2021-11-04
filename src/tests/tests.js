@@ -5,12 +5,15 @@
 // -----------------------------------------------------------------
 
 // Import the dependencies for testing
-import chai from 'chai';
+import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../server';
 // Configure chai
 chai.use(chaiHttp);
 chai.should();
+
+let id = 1;
+
 describe("Main test", () => {
     // ----------------------------------------------
     it("deberia recibir todas las mediciones", (done) => {
@@ -19,9 +22,26 @@ describe("Main test", () => {
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('array');
+                res.body[0].should.have.property('ID');
                 done();
             });
     }); 
+    // ----------------------------------------------
+    it("deberia crear un usuario", (done) => {
+        const res = "{"+
+            '"telefono":"868493778",'+
+            '"nombre":"Prueba",'+
+            '"password":"1999"'+
+        "}";
+        chai.request(app)
+            .post(`/usuario`)
+            .send(JSON.parse(res))
+            .end((err, res) => {
+                res.should.have.status(200);
+                expect(res.body.affectedRows).be.above(0);
+                done();
+            });
+    });
     // ----------------------------------------------
     it("deberia crear un nodo", (done) => {
         const res = "{"+
@@ -33,6 +53,7 @@ describe("Main test", () => {
             .send(JSON.parse(res))
             .end((err, res) => {
                 res.should.have.status(200);
+                expect(res.body.affectedRows).be.above(0);
                 done();
             });
     });
@@ -52,33 +73,19 @@ describe("Main test", () => {
             .send(JSON.parse(res))
             .end((err, res) => {
                 res.should.have.status(200);
-                done();
-            });
-    });
-    // ----------------------------------------------
-    it("deberia crear un usuario", (done) => {
-        const res = "{"+
-            '"telefono":"868493778",'+
-            '"nombre":"Prueba",'+
-            '"password":"1999"'+
-        "}";
-        chai.request(app)
-            .post(`/usuario`)
-            .send(JSON.parse(res))
-            .end((err, res) => {
-                res.should.have.status(200);
+                expect(res.body.affectedRows).be.above(0);
                 done();
             });
     });
     // TODO: Estos tests deberian recoger el id del usuario creado anteriormente y modificarlo
     // ----------------------------------------------
     it("deberia recibir un solo usuario", (done) => {
-        const id = 1;
         chai.request(app)
             .get(`/usuario/${id}`)
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('array');
+                res.body[0].should.have.property('ID');
                 done();
             });
     });
@@ -96,17 +103,18 @@ describe("Main test", () => {
             .send(JSON.parse(res))
             .end((err, res) => {
                 res.should.have.status(200);
+                expect(res.body.affectedRows).be.above(0);
                 done();
             });
     });
     // TODO: Estos tests deberian recoger el id del usuario creado anteriormente y modificarlo
     // ----------------------------------------------
     it("deberia borrar un usuario", (done) => {
-        const id = 1;
         chai.request(app)
-            .delete(`/usuario/${id}`)
+            .put(`/usuario/${id}`)
             .end((err, res) => {
                 res.should.have.status(200);
+                expect(res.body.affectedRows).be.above(0);
                 done();
             });
     });

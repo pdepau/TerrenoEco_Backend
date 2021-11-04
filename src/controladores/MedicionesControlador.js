@@ -7,9 +7,6 @@
 import {pool, medicion} from '../dbconfig.js';
 
 class MedicionesControlador {
-      // -----------------------------------------------------------------
-      //#region get
-      // -----------------------------------------------------------------
       /**
        * getTodasLasMediciones -> [JSON]
        * Devuelve un JSON con todas las Mediciones
@@ -36,16 +33,37 @@ class MedicionesControlador {
                   });
             });
       }
-      // -----------------------------------------------------------------
-      //#endregion
-      // -----------------------------------------------------------------
-      // -----------------------------------------------------------------
-      //#region post
-      // -----------------------------------------------------------------
+
+      /**
+       *                obtenerUltimaMedicion()
+       * Medicion <-
+       * Devuelve un JSON con la ultima medicion
+       *
+       * @return {promise} promesa de JSON con la medicion
+       * 
+       */
+       static obtenerUltimaMedicion() {
+            return new Promise(result => {
+
+                  var queryString = "SELECT MAX(ID) as id, latitud, longitud, valor FROM "+medicion+";";
+
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }
       /**
        * Medicion:Medicion -> 
        *                crearMedicion() ->
-       * json <-
+       * resultado:texto <-
        * 
        * Crea una nueva Medicion en la base de datos con los datos recibidos
        *
@@ -73,9 +91,6 @@ class MedicionesControlador {
                   });
             });
       }
-      // -----------------------------------------------------------------
-      //#endregion
-      // -----------------------------------------------------------------
 
 }
 export default MedicionesControlador;

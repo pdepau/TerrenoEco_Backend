@@ -77,7 +77,7 @@ routes.post('/medicion', async (request, response) => {
  */
   routes.get('/usuario/:id', async (request, response) => {
     // Recibe las Mediciones
-    const Mediciones = await UsuariosControlador.obtenerUsuario(request.id);
+    const Mediciones = await UsuariosControlador.obtenerUsuario(request.params.id);
     // Se asegura de que no haya errores
     if(!Mediciones) response.status(404).send(`No hay Mediciones`);
     // Devuelve la lista de Mediciones
@@ -139,11 +139,11 @@ routes.put('/usuario', async (request, response) => {
  * @param {text} callback function
  * @return {text} JSON con el usuario enviado
  * 
- * DELETE /usuario
+ * PUT /usuario
  */
-routes.delete('/usuario/:id', async (request, response) => {
+routes.put('/usuario/:id', async (request, response) => {
   // Recibe los sensores
-  const usuario = await UsuariosControlador.borrarUsuario(request.id);
+  const usuario = await UsuariosControlador.borrarUsuario(request.params.id);
   // Se asegura de que no haya errores
   if(!usuario) response.status(404).send(`No se ha encontrado el usuario`);
   // Devuelve la lista de sensores
