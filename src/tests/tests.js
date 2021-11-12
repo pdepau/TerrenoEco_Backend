@@ -8,6 +8,7 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../server';
+import interpolateArray from '2d-bicubic-interpolate';
 // Configure chai
 chai.use(chaiHttp);
 chai.should();
@@ -117,5 +118,34 @@ describe("Main test", () => {
                 expect(res.body.affectedRows).be.above(0);
                 done();
             });
+    });
+    // ----------------------------------------------
+    // Comprobamos la libreria por si se actualizara y los valores cambiaran
+    it("interpolacion", (done) => {
+        const data = [
+            {
+                x: 0,
+                y: 0,
+                z: 0.3
+            },
+            {
+                x: 1,
+                y: 0,
+                z: 1.2
+            },
+            {
+                x: 0,
+                y: 1,
+                z: 1.4
+            },
+            {
+                x: 1,
+                y: 1,
+                z: 2.2
+            }
+        ];
+        const result = interpolateArray(data, 1);
+        expect(result[1].z).equal(0.75);
+        done();
     });
 });

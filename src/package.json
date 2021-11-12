@@ -11,10 +11,13 @@
   "author": "Luis Belloch",
   "license": "ISC",
   "dependencies": {
+    "2d-bicubic-interpolate": "^1.0.7",
     "@babel/polyfill": "^7.12.1",
     "babel-node": "0.0.1-security",
     "body-parser": "^1.18.3",
-    "nodemon": "^2.0.13"
+    "cubic-spline": "^3.0.3",
+    "nodemon": "^2.0.13",
+    "split-array": "^1.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

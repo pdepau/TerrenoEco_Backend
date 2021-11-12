@@ -25,6 +25,7 @@ const routes = Router();
   {
     "id":1,
     "nodo":32,
+    "usuario":1,
     "tiempo":1635496134293,
     "tipo":2,
     "latitud":32.43635,
