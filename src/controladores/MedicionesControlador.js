@@ -5,6 +5,8 @@
 // -----------------------------------------------------------------
 
 import {pool, medicion} from '../dbconfig.js';
+import interpolateArray from '2d-bicubic-interpolate';
+var nurbs = require('nurbs');
 
 class MedicionesControlador {
       /**
@@ -92,5 +94,30 @@ class MedicionesControlador {
             });
       }
 
+      /**
+       * 
+       * mediciones:json -> 
+       *                interpolarMediciones3d()
+       * datos:<interpolada> <-
+       * 
+       * Interpola una lista de mediciones y crea valores entre los resultados obtenidos
+       * 
+       * @param {string} mediciones acotadas
+       * @param {number} factor de interpolacion
+       * @returns curve nurb object
+       */
+      static interpolarMediciones3d(mediciones, factor) {
+
+            let points = [];
+            const j_mediciones = JSON.parse(mediciones);
+            j_mediciones.forEach(medicion => {
+                  points.push([medicion.latitud, medicion.longitud, medicion.valor]);
+            });
+
+            let curve = nurbs(points);
+
+            return curve;
+      }
 }
+
 export default MedicionesControlador;

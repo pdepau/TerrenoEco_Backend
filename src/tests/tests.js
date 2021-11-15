@@ -9,6 +9,7 @@ import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../server';
 import interpolateArray from '2d-bicubic-interpolate';
+import MedicionesControlador from '../controladores/MedicionesControlador';
 // Configure chai
 chai.use(chaiHttp);
 chai.should();
@@ -122,30 +123,14 @@ describe("Main test", () => {
     // ----------------------------------------------
     // Comprobamos la libreria por si se actualizara y los valores cambiaran
     it("interpolacion", (done) => {
-        const data = [
-            {
-                x: 0,
-                y: 0,
-                z: 0.3
-            },
-            {
-                x: 1,
-                y: 0,
-                z: 1.2
-            },
-            {
-                x: 0,
-                y: 1,
-                z: 1.4
-            },
-            {
-                x: 1,
-                y: 1,
-                z: 2.2
-            }
-        ];
-        const result = interpolateArray(data, 1);
-        expect(result[1].z).equal(0.75);
+        const res = '[{"valor":222,"latitud":"-0.24263245","longitud":"-0.4252626","tiempo":"1635960428862","tipo":1,"nodo":1,"usuario":1},'+
+            '{"valor":156,"latitud":"-0.24263255","longitud":"-0.4252726","tiempo":"1635960426862","tipo":1,"nodo":1,"usuario":1},'+
+            '{"valor":65,"latitud":"-0.24263345","longitud":"-0.4252636","tiempo":"1635960428962","tipo":1,"nodo":1,"usuario":1}]';
+        const curve = MedicionesControlador.interpolarMediciones3d(res, 5);
+
+        const e = curve.evaluate([], -0.24263255, -0.4252723);
+        console.log(e);
+        // TODO: falta el testeo aqui
         done();
     });
 });
