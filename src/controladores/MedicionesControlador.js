@@ -51,11 +51,10 @@ class MedicionesControlador {
        * @param {Punto} puntoMax 
        * @param {number} tiempoMin 
        * @param {number} tiempoMax 
-       * @param {number} tipo
        * @param {pool} pool de la base de datos
        * @returns {promise} promesa de los datos
        */
-      static obtenerMedicionesAcotadas(puntoMin, puntoMax, tiempoMin, tiempoMax, tipo, pool) {
+      static obtenerMedicionesAcotadas(puntoMin, puntoMax, tiempoMin, tiempoMax, pool) {
             return new Promise(result => {
 
                   var queryString = "SELECT * FROM medida WHERE ";

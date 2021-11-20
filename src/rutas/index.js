@@ -11,6 +11,7 @@ import UsuariosControlador from '../controladores/UsuariosControlador.js';
 import "babel-polyfill"; //regeneratorRuntime error fix
 import NodosControlador from '../controladores/NodosControlador.js';
 import { pool } from '../dbconfig.js';
+import Punto from '../controladores/Punto.js';
 var bodyParser = require('body-parser');
 const routes = Router();
 /**
@@ -37,6 +38,36 @@ const routes = Router();
 routes.get('/mediciones', async (request, response) => {
   // Recibe las Mediciones
   const Mediciones = await MedicionesControlador.obtenerTodasLasMediciones(pool);
+  // Se asegura de que no haya errores
+  if(!Mediciones) response.status(404).send(`No hay Mediciones`);
+  // Devuelve la lista de Mediciones
+  response.send(Mediciones);
+});
+
+/**
+ * 
+ * Recibe Mediciones acotadas por tiempo y posicion
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con las Mediciones
+ * 
+ * GET /Mediciones/acotadas
+ * Cuerpo:
+  {
+    "latMax":1,
+    "latMin":32,
+    "lonMax":1,
+    "lonMin":2,
+    "tiempo":1635496134293
+  }
+ */
+routes.get('/mediciones/acotadas', async (request, response) => {
+  let json = request.body;
+  let puntoMax = new Punto(json.latMax, json.lonMax);
+  let puntoMin = new Punto(json.latMin, json.lonMin);
+  // Recibe las Mediciones
+  const Mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, pool);
   // Se asegura de que no haya errores
   if(!Mediciones) response.status(404).send(`No hay Mediciones`);
   // Devuelve la lista de Mediciones
