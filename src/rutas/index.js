@@ -10,6 +10,7 @@ import MedicionesControlador from '../controladores/MedicionesControlador.js';
 import UsuariosControlador from '../controladores/UsuariosControlador.js';
 import "babel-polyfill"; //regeneratorRuntime error fix
 import NodosControlador from '../controladores/NodosControlador.js';
+import { pool } from '../dbconfig.js';
 var bodyParser = require('body-parser');
 const routes = Router();
 /**
@@ -35,7 +36,7 @@ const routes = Router();
  */
 routes.get('/mediciones', async (request, response) => {
   // Recibe las Mediciones
-  const Mediciones = await MedicionesControlador.obtenerTodasLasMediciones();
+  const Mediciones = await MedicionesControlador.obtenerTodasLasMediciones(pool);
   // Se asegura de que no haya errores
   if(!Mediciones) response.status(404).send(`No hay Mediciones`);
   // Devuelve la lista de Mediciones
@@ -60,7 +61,7 @@ routes.get('/mediciones', async (request, response) => {
  */
 routes.post('/medicion', async (request, response) => {
   // Recibe los sensores
-  const medicion = await MedicionesControlador.crearMedicion(request.body);
+  const medicion = await MedicionesControlador.crearMedicion(request.body, pool);
   // Se asegura de que no haya errores
   if(!medicion) response.status(404).send(`No se ha creado la medicion`);
   // Devuelve la lista de sensores
@@ -76,14 +77,14 @@ routes.post('/medicion', async (request, response) => {
  * @return {text} JSON con el usuario
  * 
  */
-  routes.get('/usuario/:id', async (request, response) => {
-    // Recibe las Mediciones
-    const Mediciones = await UsuariosControlador.obtenerUsuario(request.params.id);
-    // Se asegura de que no haya errores
-    if(!Mediciones) response.status(404).send(`No hay Mediciones`);
-    // Devuelve la lista de Mediciones
-    response.send(Mediciones);
-  });
+routes.get('/usuario/:id', async (request, response) => {
+  // Recibe las Mediciones
+  const Mediciones = await UsuariosControlador.obtenerUsuario(request.params.id, pool);
+  // Se asegura de que no haya errores
+  if(!Mediciones) response.status(404).send(`No hay Mediciones`);
+  // Devuelve la lista de Mediciones
+  response.send(Mediciones);
+});
 
 /**
  * Envia un usuario a la base de datos para añadirla
@@ -102,7 +103,7 @@ routes.post('/medicion', async (request, response) => {
  */
 routes.post('/usuario', async (request, response) => {
   // Recibe los sensores
-  const usuario = await UsuariosControlador.crearUsuario(request.body);
+  const usuario = await UsuariosControlador.crearUsuario(request.body, pool);
   // Se asegura de que no haya errores
   if(!usuario) response.status(404).send(`No se ha creado el usuario`);
   // Devuelve la lista de sensores
@@ -126,7 +127,7 @@ routes.post('/usuario', async (request, response) => {
  */
 routes.put('/usuario', async (request, response) => {
   // Recibe los sensores
-  const usuario = await UsuariosControlador.actualizarUsuario(request.body);
+  const usuario = await UsuariosControlador.actualizarUsuario(request.body, pool);
   // Se asegura de que no haya errores
   if(!usuario) response.status(404).send(`No se ha encontrado el usuario`);
   // Devuelve la lista de sensores
@@ -144,7 +145,7 @@ routes.put('/usuario', async (request, response) => {
  */
 routes.put('/usuario/:id', async (request, response) => {
   // Recibe los sensores
-  const usuario = await UsuariosControlador.borrarUsuario(request.params.id);
+  const usuario = await UsuariosControlador.borrarUsuario(request.params.id, pool);
   // Se asegura de que no haya errores
   if(!usuario) response.status(404).send(`No se ha encontrado el usuario`);
   // Devuelve la lista de sensores
@@ -164,9 +165,9 @@ routes.put('/usuario/:id', async (request, response) => {
       "estado":"1"
   }
  */
- routes.post('/nodo', async (request, response) => {
+routes.post('/nodo', async (request, response) => {
   // Recibe los sensores
-  const nodo = await NodosControlador.crearNodo(request.body);
+  const nodo = await NodosControlador.crearNodo(request.body, pool);
   // Se asegura de que no haya errores
   if(!nodo) response.status(404).send(`No se ha creado el nodo`);
   // Devuelve la lista de sensores

@@ -4,7 +4,7 @@
 // Creado: 06/10/2021
 // -----------------------------------------------------------------
 
-import {pool, medicion} from '../dbconfig.js';
+import {medicion} from '../dbconfig.js';
 import Punto from './Punto.js';
 
 class MedicionesControlador {
@@ -12,10 +12,11 @@ class MedicionesControlador {
        * getTodasLasMediciones -> [JSON]
        * Devuelve un JSON con todas las Mediciones
        *
+       * @param {pool} pool de la base de datos
        * @return {promise} promesa de los datos
        * 
        */
-      static obtenerTodasLasMediciones() {
+      static obtenerTodasLasMediciones(pool) {
             // Recibe las Mediciones
             return new Promise(result => {
 
@@ -36,14 +37,71 @@ class MedicionesControlador {
       }
 
       /**
+       * posicion1:Posicion,
+       * posicion2:Posicion,
+       * t_inicio:Z,
+       * t_final:Z,
+       * tipo:Z =>
+       *       obtenerMedicionesAcotadas()
+       * [Medicion] <=
+       * 
+       * Recibes datos para acotar una medicion segun la posicion, el tiempo y el tipo
+       * 
+       * @param {Punto} puntoMin 
+       * @param {Punto} puntoMax 
+       * @param {number} tiempoMin 
+       * @param {number} tiempoMax 
+       * @param {number} tipo
+       * @param {pool} pool de la base de datos
+       * @returns {promise} promesa de los datos
+       */
+      static obtenerMedicionesAcotadas(puntoMin, puntoMax, tiempoMin, tiempoMax, tipo, pool) {
+            return new Promise(result => {
+
+                  var queryString = "SELECT * FROM medida WHERE ";
+
+                  // Si uno de los valores no es null lo pone en el query
+                  if(puntoMin != null && puntoMax != null) {
+                        queryString.concat(`${medicion}.latitud < ${puntoMax.lat} AND ${medicion}.latitud > ${puntoMin.lat} AND `)
+                        queryString.concat(`${medicion}.longitud < ${puntoMax.lon} AND ${medicion}.longitud > ${puntoMin.lon} AND `)
+                  } else {
+                        result('Los puntos no son válidos, deben ser objetos Punto');
+                  }
+                  if(tiempoMin != null && tiempoMax != null) {
+                        queryString.concat(`${medicion}.tiempo < ${tiempoMax} AND ${medicion}.latitud > ${tiempoMin} AND `)
+                  } else {
+                        result('Los tiempos no son válidos, deben estar en milisegundos');
+                  }
+                  if(tipo != null) {
+                        queryString.concat(`${medicion}.tipo = ${tipo}`)
+                  } else {
+                        result('El tipo no es válido, debe ser un numero');
+                  }
+
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }
+
+      /**
        *                obtenerUltimaMedicion()
        * Medicion <-
        * Devuelve un JSON con la ultima medicion
        *
+       * @param {pool} pool de la base de datos
        * @return {promise} promesa de JSON con la medicion
        * 
        */
-       static obtenerUltimaMedicion() {
+      static obtenerUltimaMedicion(pool) {
             return new Promise(result => {
 
                   var queryString = "SELECT MAX(ID) as id, latitud, longitud, valor FROM "+medicion+";";
@@ -69,10 +127,11 @@ class MedicionesControlador {
        * Crea una nueva Medicion en la base de datos con los datos recibidos
        *
        * @param {text} json con los datos de la Medicion
+       * @param {pool} pool de la base de datos
        * @return {promise} promesa
        * 
        */
-      static crearMedicion(json) {
+      static crearMedicion(json, pool) {
             
             return new Promise(result => {
                   
@@ -100,6 +159,18 @@ class MedicionesControlador {
        * datos:[interpolados] <-
        * 
        * Interpola una lista de mediciones y crea valores entre los resultados obtenidos
+       * 
+       * Datos devueltos:
+       * [{
+       *    latitud: -0.3452,
+       *    longitud: 0.262462,
+       *    valor: 43
+       * },
+       * {
+       *    latitud: -0.3352,
+       *    longitud: 0.222462,
+       *    valor: 32
+       * }]
        * 
        * @param {string} mediciones acotadas
        * @param {number} factor de interpolacion

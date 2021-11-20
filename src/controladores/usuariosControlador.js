@@ -4,7 +4,7 @@
 // Creado: 31/10/2021
 // -----------------------------------------------------------------
 
-import {pool, usuario} from '../dbconfig.js';
+import {usuario} from '../dbconfig.js';
 
 class usuariosControlador {
       /**
@@ -14,10 +14,11 @@ class usuariosControlador {
        * 
        * Devuelve un JSON con el usuario
        *
+       * @param {pool} pool de la base de datos
        * @return {promise} promesa de los datos de usuario
        * 
        */
-      static obtenerUsuario(id) {
+      static obtenerUsuario(id, pool) {
             return new Promise(result => {
 
                   var queryString = "SELECT * FROM "+usuario+" WHERE "+usuario+".ID='"+id+"';";
@@ -40,10 +41,11 @@ class usuariosControlador {
        * Usuario <-
        * Devuelve un JSON con el ultimo usuario
        *
+       * @param {pool} pool de la base de datos
        * @return {promise} promesa de JSON con los datos
        * 
        */
-       static obtenerUltimoUsuario() {
+       static obtenerUltimoUsuario(pool) {
             return new Promise(result => {
 
                   var queryString = "SELECT MAX(ID) as id, nombre, telefono valor FROM "+usuario+";";

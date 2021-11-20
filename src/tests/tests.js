@@ -119,6 +119,7 @@ describe("Main test", () => {
                 done();
             });
     });
+    // TODO: testear obtenerMedicionesAcotadas
     // ----------------------------------------------
     // Comprobamos la libreria por si se actualizara y los valores cambiaran
     it("interpolacion", (done) => {

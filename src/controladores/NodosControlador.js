@@ -4,7 +4,7 @@
 // Creado: 03/11/2021
 // -----------------------------------------------------------------
 
-import {pool, nodo} from '../dbconfig.js';
+import {nodo} from '../dbconfig.js';
 
 class NodosControlador {
       /**
@@ -15,9 +15,10 @@ class NodosControlador {
        * Crea un nuevo nodo con los datos insertados
        * 
        * @param {texto} json con el nodo
+       * @param {pool} pool de la base de datos
        * @returns {promise} promesa del resultado
        */
-      static crearNodo(json) {
+      static crearNodo(json, pool) {
             return new Promise(result => {
                         
                   // ID es NULL porque la base da datos lo asigna como valor autoincremental
