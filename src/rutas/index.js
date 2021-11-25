@@ -45,7 +45,6 @@ routes.get('/mediciones', async (request, response) => {
 });
 
 /**
- * 
  * Recibe Mediciones acotadas por tiempo y posicion
  *
  * @param {text} URL
@@ -53,7 +52,7 @@ routes.get('/mediciones', async (request, response) => {
  * @return {text} JSON con las Mediciones
  * 
  * GET /Mediciones/acotadas
- * Cuerpo:
+ * Envía los datos para la operación de acotado dentro del cuerpo:
   {
     "latMax":1,
     "latMin":32,
@@ -74,6 +73,50 @@ routes.get('/mediciones/acotadas', async (request, response) => {
   response.send(Mediciones);
 });
 
+/**
+ * Recibe Mediciones acotadas por tiempo y posicion y además interpoladas
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con las Mediciones
+ * 
+ * GET /Mediciones/acotadas
+ * Envía los datos para la operación de acotado dentro del cuerpo:
+  {
+    "latMax":1,
+    "latMin":32,
+    "lonMax":1,
+    "lonMin":2,
+    "tiempo":1635496134293,
+    "factor":2
+  }
+  * el factor funciona bien entre 2 y 10
+  Datos devueltos:
+  * [{
+  *    latitud: -0.3452,
+  *    longitud: 0.262462,
+  *    valor: 43
+  * },
+  * {
+  *    latitud: -0.3352,
+  *    longitud: 0.222462,
+  *    valor: 32
+  * }]
+ */
+  routes.get('/mediciones/acotadas/interp', async (request, response) => {
+    const json = request.body;
+    const puntoMax = new Punto(json.latMax, json.lonMax);
+    const puntoMin = new Punto(json.latMin, json.lonMin);
+    const factos = json.factor;
+    // Recibe las mediciones
+    const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, pool);
+    // Se asegura de que no haya errores
+    if(!mediciones) response.status(404).send(`No hay Mediciones`);
+    const interp = await MedicionesControlador.interpolarMediciones(mediciones, factor);
+    // Devuelve la lista de Mediciones
+    response.send(interp);
+  });
+
 // -----------------------------------------------------------------
 //#endregion
 // -----------------------------------------------------------------
@@ -89,6 +132,7 @@ routes.get('/mediciones/acotadas', async (request, response) => {
  * @return {text} JSON con la medicion enviada
  * 
  * POST /medicion
+ * Envía dentro del cuerpo los datos de la medición
  */
 routes.post('/medicion', async (request, response) => {
   // Recibe los sensores
@@ -125,6 +169,7 @@ routes.get('/usuario/:id', async (request, response) => {
  * @return {text} JSON con el usuario enviado
  * 
  * POST /usuario
+ * Envía los datos dentro del cuerpo:
  *{
     "id":1,
     "telefono":4532156266,
@@ -149,6 +194,7 @@ routes.post('/usuario', async (request, response) => {
  * @return {text} JSON con el usuario enviado
  * 
  * PUT /usuario
+ * Envía los datos dentro del cuerpo:
  *{
     "id":1,
     "telefono":4532156266,
@@ -173,6 +219,7 @@ routes.put('/usuario', async (request, response) => {
  * @return {text} JSON con el usuario enviado
  * 
  * PUT /usuario
+ * Envía el ID en la url como numero
  */
 routes.put('/usuario/:id', async (request, response) => {
   // Recibe los sensores
@@ -191,6 +238,7 @@ routes.put('/usuario/:id', async (request, response) => {
  * @return {text} JSON con el nodo enviado
  * 
  * POST /nodo
+ * Envía el objeto nodo por el cuerpo, la ID se genera en la base de datos Autoincremental
  * {
       "usuario":"1",
       "estado":"1"

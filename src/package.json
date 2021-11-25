@@ -2,6 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "test": "mocha --require babel-register tests/tests.js --exit",
     "dev": "nodemon --exec babel-node --presets babel-preset-env ./server.js"
@@ -19,6 +20,7 @@
     "ndarray-linear-interpolate": "^1.0.0",
     "nodemon": "^2.0.13",
     "nurbs": "^1.1.1",
+    "puppeteer": "^11.0.0",
     "split-array": "^1.0.1",
     "sqlite3": "^5.0.2"
   },
