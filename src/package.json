@@ -22,7 +22,8 @@
     "nurbs": "^1.1.1",
     "puppeteer": "^11.0.0",
     "split-array": "^1.0.1",
-    "sqlite3": "^5.0.2"
+    "sqlite3": "^5.0.2",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

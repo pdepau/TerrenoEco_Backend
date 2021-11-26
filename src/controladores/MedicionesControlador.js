@@ -54,29 +54,28 @@ class MedicionesControlador {
        * @param {pool} pool de la base de datos
        * @returns {promise} promesa de los datos
        */
-      static obtenerMedicionesAcotadas(puntoMin, puntoMax, tiempoMin, tiempoMax, pool) {
+      static obtenerMedicionesAcotadas(puntoMin, puntoMax, tiempoMin, tiempoMax,tipo, pool) {
             return new Promise(result => {
-
+                  
                   var queryString = "SELECT * FROM medida WHERE ";
-
                   // Si uno de los valores no es null lo pone en el query
                   if(puntoMin != null && puntoMax != null) {
-                        queryString.concat(`${medicion}.latitud < ${puntoMax.lat} AND ${medicion}.latitud > ${puntoMin.lat} AND `)
-                        queryString.concat(`${medicion}.longitud < ${puntoMax.lon} AND ${medicion}.longitud > ${puntoMin.lon} AND `)
+                        queryString+=(`${medicion}.latitud < ${puntoMax.lat} AND ${medicion}.latitud > ${puntoMin.lat} AND `)
+                        queryString+=(`${medicion}.longitud < ${puntoMax.lon} AND ${medicion}.longitud > ${puntoMin.lon} AND `)
+                        
                   } else {
                         result('Los puntos no son válidos, deben ser objetos Punto');
                   }
                   if(tiempoMin != null && tiempoMax != null) {
-                        queryString.concat(`${medicion}.tiempo < ${tiempoMax} AND ${medicion}.latitud > ${tiempoMin} AND `)
+                        queryString+=(`${medicion}.tiempo < ${tiempoMax} AND ${medicion}.tiempo > ${tiempoMin} AND `)
                   } else {
                         result('Los tiempos no son válidos, deben estar en milisegundos');
                   }
                   if(tipo != null) {
-                        queryString.concat(`${medicion}.tipo = ${tipo}`)
+                        queryString+=(`${medicion}.tipo = ${tipo}`)
                   } else {
                         result('El tipo no es válido, debe ser un numero');
                   }
-
                   pool.getConnection((err, connection) => {
                         if(err) throw err;
                         console.log('connected as id ' + connection.threadId);
@@ -131,7 +130,8 @@ class MedicionesControlador {
        * 
        */
       static crearMedicion(json, pool) {
-            
+            var a;
+
             return new Promise(result => {
                   
                   // ID es NULL porque la base da datos lo asigna como valor autoincremental
@@ -178,13 +178,14 @@ class MedicionesControlador {
       static interpolarMediciones(mediciones, factor) {
             let interpolados = [];
             let points = [];
+            console.log(mediciones)
             const j_mediciones = JSON.parse(mediciones);
             j_mediciones.forEach(medicion => {
                   points.push([medicion.latitud, medicion.longitud, medicion.valor]);
                   // Insertamos los valores de la entrada en la misma salida
                   interpolados.push({
-                        latitud: medicion.latitud,
-                        longitud: medicion.longitud,
+                        lat: medicion.latitud,
+                        lng: medicion.longitud,
                         valor: medicion.valor
                   })
             });
@@ -232,8 +233,8 @@ class MedicionesControlador {
                         let mediaPonderada = total/totalPesos;
                         
                         interpolados.push({
-                              latitud: LatMin + escalon   * i,
-                              longitud: LonMin + escalon * j,
+                              lat: LatMin + escalon * i,
+                              lng: LonMin + escalon * j,
                               valor: mediaPonderada
                         });
                   } // for j

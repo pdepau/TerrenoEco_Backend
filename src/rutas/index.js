@@ -5,14 +5,14 @@
 // Estado: DONE
 // -----------------------------------------------------------------
 
-import { Router } from 'express';
-import MedicionesControlador from '../controladores/MedicionesControlador.js';
-import UsuariosControlador from '../controladores/UsuariosControlador.js';
+import { Router } from "express";
+import MedicionesControlador from "../controladores/MedicionesControlador.js";
+import UsuariosControlador from "../controladores/UsuariosControlador.js";
 import "babel-polyfill"; //regeneratorRuntime error fix
-import NodosControlador from '../controladores/NodosControlador.js';
-import { pool } from '../dbconfig.js';
-import Punto from '../controladores/Punto.js';
-var bodyParser = require('body-parser');
+import NodosControlador from "../controladores/NodosControlador.js";
+import { pool } from "../dbconfig.js";
+import Punto from "../controladores/Punto.js";
+var bodyParser = require("body-parser");
 const routes = Router();
 /**
  * 
@@ -35,11 +35,13 @@ const routes = Router();
     "valor":43
   }
  */
-routes.get('/mediciones', async (request, response) => {
+routes.get("/mediciones", async (request, response) => {
   // Recibe las Mediciones
-  const Mediciones = await MedicionesControlador.obtenerTodasLasMediciones(pool);
+  const Mediciones = await MedicionesControlador.obtenerTodasLasMediciones(
+    pool
+  );
   // Se asegura de que no haya errores
-  if(!Mediciones) response.status(404).send(`No hay Mediciones`);
+  if (!Mediciones) response.status(404).send(`No hay Mediciones`);
   // Devuelve la lista de Mediciones
   response.send(Mediciones);
 });
@@ -52,23 +54,30 @@ routes.get('/mediciones', async (request, response) => {
  * @return {text} JSON con las Mediciones
  * 
  * GET /Mediciones/acotadas
- * Envía los datos para la operación de acotado dentro del cuerpo:
-  {
+ * Envía los datos para la operación de acotado dentro de la url
     "latMax":1,
     "latMin":32,
     "lonMax":1,
     "lonMin":2,
-    "tiempo":1635496134293
-  }
+    "tiempoMin":1635496134293,
+    "tiempoMax":1635496134293,
+    "tipo":1
  */
-routes.get('/mediciones/acotadas', async (request, response) => {
-  let json = request.body;
-  let puntoMax = new Punto(json.latMax, json.lonMax);
-  let puntoMin = new Punto(json.latMin, json.lonMin);
+routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tiempoMax/:tipo", async (request, response) => {
+  let params = request.params;
+  let puntoMax = new Punto(parseFloat(params.latMax), parseFloat(params.lonMax));
+  let puntoMin = new Punto(parseFloat(params.latMin), parseFloat(params.lonMin));
   // Recibe las Mediciones
-  const Mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, pool);
+  const Mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(
+    puntoMin,
+    puntoMax,
+    params.tiempoMin,
+    params.tiempoMax,
+    params.tipo,
+    pool
+  );
   // Se asegura de que no haya errores
-  if(!Mediciones) response.status(404).send(`No hay Mediciones`);
+  if (!Mediciones) response.status(404).send(`No hay Mediciones`);
   // Devuelve la lista de Mediciones
   response.send(Mediciones);
 });
@@ -124,39 +133,45 @@ routes.get('/mediciones/acotadas', async (request, response) => {
 //#region POST
 // -----------------------------------------------------------------
 /**
- * 
+ *
  * Envia una medicion a la base de datos para añadirla
  *
  * @param {text} URL
  * @param {text} callback function
  * @return {text} JSON con la medicion enviada
- * 
+ *
  * POST /medicion
  * Envía dentro del cuerpo los datos de la medición
  */
-routes.post('/medicion', async (request, response) => {
+routes.post("/medicion", async (request, response) => {
   // Recibe los sensores
-  const medicion = await MedicionesControlador.crearMedicion(request.body, pool);
+  const medicion = await MedicionesControlador.crearMedicion(
+    request.body,
+    pool
+  );
   // Se asegura de que no haya errores
-  if(!medicion) response.status(404).send(`No se ha creado la medicion`);
+  if (!medicion) response.status(404).send(`No se ha creado la medicion`);
   // Devuelve la lista de sensores
   response.send(medicion);
 });
 
 /**
- * 
+ *
  * Recibe un usuario de la base de datos
  *
  * @param {text} URL
  * @param {text} callback function
  * @return {text} JSON con el usuario
- * 
+ *
  */
-routes.get('/usuario/:id', async (request, response) => {
+routes.get("/usuario/:id", async (request, response) => {
   // Recibe las Mediciones
-  const Mediciones = await UsuariosControlador.obtenerUsuario(request.params.id, pool);
+  const Mediciones = await UsuariosControlador.obtenerUsuario(
+    request.params.id,
+    pool
+  );
   // Se asegura de que no haya errores
-  if(!Mediciones) response.status(404).send(`No hay Mediciones`);
+  if (!Mediciones) response.status(404).send(`No hay Mediciones`);
   // Devuelve la lista de Mediciones
   response.send(Mediciones);
 });
@@ -177,11 +192,11 @@ routes.get('/usuario/:id', async (request, response) => {
     "password":"1635496033293"
   }
  */
-routes.post('/usuario', async (request, response) => {
+routes.post("/usuario", async (request, response) => {
   // Recibe los sensores
   const usuario = await UsuariosControlador.crearUsuario(request.body, pool);
   // Se asegura de que no haya errores
-  if(!usuario) response.status(404).send(`No se ha creado el usuario`);
+  if (!usuario) response.status(404).send(`No se ha creado el usuario`);
   // Devuelve la lista de sensores
   response.send(usuario);
 });
@@ -202,11 +217,14 @@ routes.post('/usuario', async (request, response) => {
     "password":"1635496033293"
   }
  */
-routes.put('/usuario', async (request, response) => {
+routes.put("/usuario", async (request, response) => {
   // Recibe los sensores
-  const usuario = await UsuariosControlador.actualizarUsuario(request.body, pool);
+  const usuario = await UsuariosControlador.actualizarUsuario(
+    request.body,
+    pool
+  );
   // Se asegura de que no haya errores
-  if(!usuario) response.status(404).send(`No se ha encontrado el usuario`);
+  if (!usuario) response.status(404).send(`No se ha encontrado el usuario`);
   // Devuelve la lista de sensores
   response.send(usuario);
 });
@@ -217,15 +235,18 @@ routes.put('/usuario', async (request, response) => {
  * @param {text} URL
  * @param {text} callback function
  * @return {text} JSON con el usuario enviado
- * 
+ *
  * PUT /usuario
  * Envía el ID en la url como numero
  */
-routes.put('/usuario/:id', async (request, response) => {
+routes.put("/usuario/:id", async (request, response) => {
   // Recibe los sensores
-  const usuario = await UsuariosControlador.borrarUsuario(request.params.id, pool);
+  const usuario = await UsuariosControlador.borrarUsuario(
+    request.params.id,
+    pool
+  );
   // Se asegura de que no haya errores
-  if(!usuario) response.status(404).send(`No se ha encontrado el usuario`);
+  if (!usuario) response.status(404).send(`No se ha encontrado el usuario`);
   // Devuelve la lista de sensores
   response.send(usuario);
 });
@@ -244,14 +265,13 @@ routes.put('/usuario/:id', async (request, response) => {
       "estado":"1"
   }
  */
-routes.post('/nodo', async (request, response) => {
+routes.post("/nodo", async (request, response) => {
   // Recibe los sensores
   const nodo = await NodosControlador.crearNodo(request.body, pool);
   // Se asegura de que no haya errores
-  if(!nodo) response.status(404).send(`No se ha creado el nodo`);
+  if (!nodo) response.status(404).send(`No se ha creado el nodo`);
   // Devuelve la lista de sensores
   response.send(nodo);
 });
-
 
 export default routes;
