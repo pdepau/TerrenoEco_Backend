@@ -71,9 +71,9 @@ routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tie
   const Mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(
     puntoMin,
     puntoMax,
-    params.tiempoMin,
-    params.tiempoMax,
-    params.tipo,
+    parseInt(params.tiempoMin),
+    parseInt(params.tiempoMax),
+    parseInt(params.tipo),
     pool
   );
   // Se asegura de que no haya errores
