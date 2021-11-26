@@ -5,17 +5,19 @@
 // -----------------------------------------------------------------
 
 // Import the dependencies for testing
-import chai, { expect } from 'chai';
+import chai, { assert, expect } from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../server';
 import MedicionesControlador from '../controladores/MedicionesControlador';
+import { obtenerDatos } from '../controladores/RaspadorControlador';
+
 // Configure chai
 chai.use(chaiHttp);
 chai.should();
 
 let id = 1;
 
-describe("Main test", () => {
+describe("Main test", function () {
     // ----------------------------------------------
     it("deberia recibir todas las mediciones", (done) => {
         chai.request(app)
@@ -39,7 +41,7 @@ describe("Main test", () => {
             .send(JSON.parse(res))
             .end((err, res) => {
                 res.should.have.status(200);
-                expect(res.body.affectedRows).be.above(0);
+                expect(res.body.affectedRows).be.equals(1);
                 done();
             });
     });
@@ -54,7 +56,7 @@ describe("Main test", () => {
             .send(JSON.parse(res))
             .end((err, res) => {
                 res.should.have.status(200);
-                expect(res.body.affectedRows).be.above(0);
+                expect(res.body.affectedRows).be.equals(1);
                 done();
             });
     });
@@ -74,7 +76,7 @@ describe("Main test", () => {
             .send(JSON.parse(res))
             .end((err, res) => {
                 res.should.have.status(200);
-                expect(res.body.affectedRows).be.above(0);
+                expect(res.body.affectedRows).be.equals(1);
                 done();
             });
     });
@@ -104,7 +106,7 @@ describe("Main test", () => {
             .send(JSON.parse(res))
             .end((err, res) => {
                 res.should.have.status(200);
-                expect(res.body.affectedRows).be.above(0);
+                expect(res.body.affectedRows).be.equals(1);
                 done();
             });
     });
@@ -115,7 +117,7 @@ describe("Main test", () => {
             .put(`/usuario/${id}`)
             .end((err, res) => {
                 res.should.have.status(200);
-                expect(res.body.affectedRows).be.above(0);
+                expect(res.body.affectedRows).be.equals(1);
                 done();
             });
     });
@@ -132,5 +134,25 @@ describe("Main test", () => {
         
         // TODO: falta el testeo aqui
         done();
+    });
+    
+    // ----------------------------------------------
+});
+describe("Puppeteer tests: ", function () {
+    // Pupeteer necesita más tiempo de espera ya que la navegación puede ser lenta
+    this.timeout(11000);
+    // Tests de puppeteer
+    it("recoge datos de MITECO", async () => {
+        // Tomamos los datos desde esta página porque la de origen la tiene insertada
+        // dentro como documento. Hay que acceder a la insertada para poder referenciar
+        // sus elementos usando puppeteer
+        const URL = "https://webcat-web.gva.es/webcat_web/datosOnlineRvvcca/cargarDatosOnlineRvvcca?languageId=es_ES"
+        const municipio = "Gandia";
+        const datos = await obtenerDatos(URL, municipio);
+
+        expect(datos[0]).have.property('altitud');
+        expect(datos[0].descMunicipio).equal(municipio);
+
+        assert.ok(true);
     });
 });
