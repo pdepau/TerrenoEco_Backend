@@ -10,6 +10,7 @@ import MedicionesControlador from "../controladores/MedicionesControlador.js";
 import UsuariosControlador from "../controladores/UsuariosControlador.js";
 import "babel-polyfill"; //regeneratorRuntime error fix
 import NodosControlador from "../controladores/NodosControlador.js";
+import {obtenerDatos} from "../controladores/RaspadorControlador";
 import { pool } from "../dbconfig.js";
 import Punto from "../controladores/Punto.js";
 var bodyParser = require("body-parser");
@@ -112,19 +113,258 @@ routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tie
   *    valor: 32
   * }]
  */
-  routes.get('/mediciones/acotadas/interp', async (request, response) => {
-    const json = request.body;
-    const puntoMax = new Punto(json.latMax, json.lonMax);
-    const puntoMin = new Punto(json.latMin, json.lonMin);
-    const factos = json.factor;
-    // Recibe las mediciones
-    const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, pool);
-    // Se asegura de que no haya errores
-    if(!mediciones) response.status(404).send(`No hay Mediciones`);
-    const interp = await MedicionesControlador.interpolarMediciones(mediciones, factor);
-    // Devuelve la lista de Mediciones
-    response.send(interp);
-  });
+routes.get('/mediciones/acotadas/interp', async (request, response) => {
+  const json = request.body;
+  const puntoMax = new Punto(json.latMax, json.lonMax);
+  const puntoMin = new Punto(json.latMin, json.lonMin);
+  const factos = json.factor;
+  // Recibe las mediciones
+  const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, pool);
+  // Se asegura de que no haya errores
+  if(!mediciones) response.status(404).send(`No hay Mediciones`);
+  const interp = await MedicionesControlador.interpolarMediciones(mediciones, factor);
+  // Devuelve la lista de Mediciones
+  response.send(interp);
+});
+
+/**
+ * 
+ * Devuelve los datos de Gandia por ahora
+ * TODO: devolver los datos segun el nombre de las estaciones
+ * 
+ * Cuerpo de la respuesta con los datos, es un array
+ * [{
+  "longitudGoogleMaps" : "-0.19109882",
+  "longitudDegrees" : "-0.19109882",
+  "latitudDegrees" : "38.96797739",
+  "altitud" : "22 m",
+  "descMunicipio" : "Gandia",
+  "estacion" : {
+    "idEstacion" : 5,
+    "codigo" : "46131002",
+    "estacionNom" : "Gandia",
+    "idProvincia" : 46,
+    "provinciaNom" : "VALÈNCIA",
+    "idMunicipio" : 131,
+    "municipioNom" : "Gandia",
+    "direccion" : "Parc Alquería Nova",
+    "zona" : "4",
+    "longitud" : -0.1127,
+    "latitud" : 38.5804,
+    "altitud" : 22,
+    "activa" : "S",
+    "idRed" : 0,
+    "fechaBaja" : null
+  },
+  "latitudGoogleMaps" : "38.96797739",
+  "listMagnitudes" : [ {
+    "idME" : 870,
+    "codEstacion" : 5,
+    "codMagnitud" : 17,
+    "nombreMagnitud" : "Arsénico",
+    "abreviatura" : "As",
+    "unidad" : "ng/m³N",
+    "unidadParentesis" : "(ng/m³N)",
+    "calculo" : "S",
+    "magnitudCEE" : null,
+    "numDecimales" : 4,
+    "valorMinimo" : 0,
+    "valorMaximo" : 1000,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 873,
+    "codEstacion" : 5,
+    "codMagnitud" : 27,
+    "nombreMagnitud" : "Benzo(a)pireno",
+    "abreviatura" : "BaP",
+    "unidad" : "ng/m³N",
+    "unidadParentesis" : "(ng/m³N)",
+    "calculo" : "S",
+    "magnitudCEE" : null,
+    "numDecimales" : 4,
+    "valorMinimo" : 0,
+    "valorMaximo" : 1000,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 871,
+    "codEstacion" : 5,
+    "codMagnitud" : 28,
+    "nombreMagnitud" : "Cadmio",
+    "abreviatura" : "Cd",
+    "unidad" : "ng/m³N",
+    "unidadParentesis" : "(ng/m³N)",
+    "calculo" : "S",
+    "magnitudCEE" : null,
+    "numDecimales" : 4,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 490,
+    "codEstacion" : 5,
+    "codMagnitud" : 1,
+    "nombreMagnitud" : "Dióxido de Azufre",
+    "abreviatura" : "SO2",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 1,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 847,
+    "codEstacion" : 5,
+    "codMagnitud" : 8,
+    "nombreMagnitud" : "Dióxido de Nitrógeno",
+    "abreviatura" : "NO2",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 3,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 491,
+    "codEstacion" : 5,
+    "codMagnitud" : 6,
+    "nombreMagnitud" : "Monóxido de Carbono",
+    "abreviatura" : "CO",
+    "unidad" : "mg/m³",
+    "unidadParentesis" : "(mg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 8,
+    "numDecimales" : 1,
+    "valorMinimo" : 0,
+    "valorMaximo" : 50,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 980,
+    "codEstacion" : 5,
+    "codMagnitud" : 7,
+    "nombreMagnitud" : "Monóxido de Nitrógeno",
+    "abreviatura" : "NO",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 2,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 872,
+    "codEstacion" : 5,
+    "codMagnitud" : 62,
+    "nombreMagnitud" : "Níquel",
+    "abreviatura" : "Ni",
+    "unidad" : "ng/m³N",
+    "unidadParentesis" : "(ng/m³N)",
+    "calculo" : "S",
+    "magnitudCEE" : null,
+    "numDecimales" : 4,
+    "valorMinimo" : 0,
+    "valorMaximo" : 1000,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 740,
+    "codEstacion" : 5,
+    "codMagnitud" : 12,
+    "nombreMagnitud" : "Oxidos de Nitrógeno totales",
+    "abreviatura" : "NOx",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 15,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 492,
+    "codEstacion" : 5,
+    "codMagnitud" : 14,
+    "nombreMagnitud" : "Ozono",
+    "abreviatura" : "O3",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 5,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 867,
+    "codEstacion" : 5,
+    "codMagnitud" : 10,
+    "nombreMagnitud" : "Partículas en Suspensión (< 10 µm)",
+    "abreviatura" : "PM10",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 12,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 869,
+    "codEstacion" : 5,
+    "codMagnitud" : 9,
+    "nombreMagnitud" : "Partículas en Suspensión (< 2,5 µm)",
+    "abreviatura" : "PM2.5",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 0,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "#########"
+  }, {
+    "idME" : 470,
+    "codEstacion" : 5,
+    "codMagnitud" : 3,
+    "nombreMagnitud" : "Partículas en suspensión totales",
+    "abreviatura" : "PST",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : 4,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 250,
+    "formato" : "####.#####"
+  }, {
+    "idME" : 866,
+    "codEstacion" : 5,
+    "codMagnitud" : 19,
+    "nombreMagnitud" : "Plomo",
+    "abreviatura" : "Pb",
+    "unidad" : "µg/m³",
+    "unidadParentesis" : "(µg/m³)",
+    "calculo" : "S",
+    "magnitudCEE" : null,
+    "numDecimales" : 0,
+    "valorMinimo" : 0,
+    "valorMaximo" : 5,
+    "formato" : "####.#####"
+  } ]
+}]
+ */
+routes.get('/estaciones', async (request, response) => {
+  const URL = "https://webcat-web.gva.es/webcat_web/datosOnlineRvvcca/cargarDatosOnlineRvvcca?languageId=es_ES"
+  const municipio = "Gandia";
+  const datos = await obtenerDatos(URL, municipio);
+
+  if(!datos) response.status(400).send("No se ha encontrado la estacion");
+
+  response.send(datos);
+});
 
 // -----------------------------------------------------------------
 //#endregion
