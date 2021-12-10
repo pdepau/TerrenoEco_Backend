@@ -1,5 +1,6 @@
 import puppeteer from "puppeteer";
 
+
 /**
  * URL:texto,
  * municipio,texto =>
@@ -13,11 +14,26 @@ import puppeteer from "puppeteer";
  * 
  * @param {string} URL de la pagina
  * @returns datos seleccionados de la pagina
+ * 
+ * Formato
+[
+  {
+    estacion: [ [Object] ],
+    datos: {
+      longitudGoogleMaps: '-0.19109882',
+      longitudDegrees: '-0.19109882',
+      latitudDegrees: '38.96797739',
+      altitud: '22 m',
+      descMunicipio: 'Gandia',
+      estacion: [Object],
+      latitudGoogleMaps: '38.96797739',
+      listMagnitudes: [Array]
+    }
+  }
+]
  */
-//TODO: obtener datos
 function obtenerDatos(URL, municipio) {
   return new Promise(async (resolve,reject) => {
-    let pasos = 0;
     console.debug(URL);
     const browser = await puppeteer.launch({headless: true, devtools: true});
     console.debug("Buscador creado");
@@ -28,7 +44,11 @@ function obtenerDatos(URL, municipio) {
     try {
       // Buscamos la lista de municipios
       const elHandleArray  = await page.$$('.li-lista-municipios');
-      const gandia = []
+      var estaciones = []
+      let estacionDatos = 0;
+      let datosFrame;
+      var pasos = 0;
+      let botones = 0;
       // --------------------------------------------
       // Creamos el listener para esperar los datos
       // --------------------------------------------
@@ -36,25 +56,51 @@ function obtenerDatos(URL, municipio) {
       page.on('request', async request => {
         if (request.resourceType() == 'xhr') {
           console.debug("Paso: " + pasos);
-          if(pasos == 1) {
-            pasos += 1;
-            // Se espera a que el request finalice
-            await page.waitForResponse(response => response.status() === 200)
-            // Pilla los datos del request
-            const resultado = request.response();
-            console.debug("Conseguido. Cerrando buscador");
-            request.abort();
-        
-            gandia.push(await resultado.json());
-            resolve(gandia);
-            await browser.close(); 
-          }
+          // ERROR: No devuelve ningun dato ahora, se queda encallado. Hay que encontrar
+          // otra forma de hacerlo seguramente
+          // Municipio
           if(pasos==0) {
             pasos += 1;
             let botones = 0;
-            while(botones < 1) {
-              botones = await estacion(page, municipio);
-            }
+            const [response] = await Promise.all([
+              page.waitForResponse(response => response.url().includes('obtenerEstacionesPorMunicipio')),
+              botones = await estacion(page, municipio)
+            ]);
+          }
+          // Estación
+          if(pasos == 1) {
+            pasos += 1;
+            // Se espera a que el request finalice
+            const [response] = await Promise.all([
+              page.waitForRequest(
+                (response) =>
+                response.url().includes('obtenerEstacionesPorMunicipio') && response.status() === 200
+              )
+            ]);
+            const dataObj = await response.json();
+            estaciones.push(dataObj);
+          }
+          // Relleno
+          if(pasos==2){
+            pasos+=1;
+            const [response] = await Promise.all([
+              page.waitForResponse(response => response.url().includes('obtenerEstacionesPorMunicipio'))
+            ]);
+            const dataObj = await response.json();
+            estaciones.push(dataObj);
+          }
+          // Datos
+          if(pasos==3){
+            pasos += 1;
+            // Se espera a que el request finalice
+            const [response] = await Promise.all([
+              page.waitForResponse(response => response.url().includes('obtenerTablaPestanyaDatosOnline'))
+            ]);
+            const dataObj = await response.json();
+            estaciones.push(dataObj);
+            resolve(estaciones);
+            console.debug("Conseguido. Cerrando buscador");
+            await browser.close(); 
           }
         } // if
         request.continue();
@@ -81,7 +127,7 @@ function obtenerDatos(URL, municipio) {
 
 /**
  * 
- * Función privada auciliar para pulsar el boton de la estacion, queda más limpio el
+ * Función privada auxiliar para pulsar el boton de la estacion, queda más limpio el
  * código
  * 
  * @param {string} page object 
@@ -92,14 +138,18 @@ function estacion (page, municipio) {
   return new Promise (async (resolve, reject) => {
     // request for js resource
     console.debug("Request municipio detectado")   
-
-    // Buscamos el boton de la estacion despues de detectar el municipio pulsado
-    console.debug("Continua con la estacion")
-    const elHandleArray2  = await page.$$('#idEstacionMunicipio');
-    console.debug("Botones tomados: " + elHandleArray2.length)
-    if(elHandleArray2.length < 1) {
-      console.error("No se han encontrado botones")
-      resolve(0);
+    let i = 0;
+    while(i < 20) {
+      // Buscamos el boton de la estacion despues de detectar el municipio pulsado
+      console.debug("Continua con la estacion")
+      const elHandleArray2  = await page.$$('#idEstacionMunicipio');
+      console.debug("Botones tomados: " + elHandleArray2.length)
+      if(elHandleArray2.length < 1) {
+        console.error("No se han encontrado botones")
+        i++;
+      } else {
+        break;
+      }
     }
     for (let i = 0; i < elHandleArray2.length; i++) {
       // Comprueba los nombre de cada municipio de la lista
@@ -107,7 +157,6 @@ function estacion (page, municipio) {
       // Vamos a buscar Gandia
       if(nombre == municipio) {
         // Pulsa el boton
-        // ERROR: no se pulsa el boton correctamente, no envia request 
         //give time to extra rendering time
         await page.waitForTimeout(2000);
         elHandleArray2[i].click();
@@ -116,6 +165,11 @@ function estacion (page, municipio) {
       } // if
     } // for
   }) // Promise
+}
+
+async function asignarDatos() {
+  const resultado = request.response();
+  return await resultado.json();
 }
 
 export {obtenerDatos}
