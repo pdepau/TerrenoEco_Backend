@@ -151,10 +151,8 @@ describe("Puppeteer tests: ", function () {
         const municipio = "Gandia";
         const datos = await obtenerDatos(URL, municipio);
 
-        console.debug(datos[0].dataFrame)
-        expect(datos[0]).have.property('estacion');
-        expect(datos[0].datos.descMunicipio).equal(municipio);
-        console.debug(datos[0].datos.listMagnitudes)
+        expect(datos[0]).have.property('descMunicipio');
+        expect(datos[0].descMunicipio).equal(municipio);
 
         assert.ok(true);
     });
