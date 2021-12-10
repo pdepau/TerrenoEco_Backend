@@ -18,6 +18,7 @@ chai.should();
 let id = 1;
 
 describe("Main test", function () {
+    // TODO: limpiar la base de datos o rehacerla
     // ----------------------------------------------
     it("deberia recibir todas las mediciones", (done) => {
         chai.request(app)
@@ -140,7 +141,7 @@ describe("Main test", function () {
 });
 describe("Puppeteer tests: ", function () {
     // Pupeteer necesita más tiempo de espera ya que la navegación puede ser lenta
-    this.timeout(11000);
+    this.timeout(20000);
     // Tests de puppeteer
     it("recoge datos de MITECO", async () => {
         // Tomamos los datos desde esta página porque la de origen la tiene insertada
@@ -150,7 +151,7 @@ describe("Puppeteer tests: ", function () {
         const municipio = "Gandia";
         const datos = await obtenerDatos(URL, municipio);
 
-        expect(datos[0]).have.property('altitud');
+        expect(datos[0]).have.property('descMunicipio');
         expect(datos[0].descMunicipio).equal(municipio);
 
         assert.ok(true);

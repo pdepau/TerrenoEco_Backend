@@ -74,7 +74,7 @@ class usuariosControlador {
        * @return {promise} promesa de los datos
        * 
        */
-      static crearUsuario(json) {
+      static crearUsuario(json, pool) {
             return new Promise(result => {
 
                   const queryString = "INSERT INTO `"+usuario+"` (`ID`, `nombre`, `telefono`, `password`) VALUES ('NULL', '"+json.nombre+"', '"+json.telefono+"', '"+json.password+"');"
@@ -104,7 +104,7 @@ class usuariosControlador {
        * @return {promise} promesa con la respuesta
        * 
        */
-      static actualizarUsuario(json) {
+      static actualizarUsuario(json, pool) {
             return new Promise(result => {
                   
                   // ID es NULL porque la base da datos lo asigna como valor autoincremental
@@ -135,7 +135,7 @@ class usuariosControlador {
        * @return {promise} promesa con la respuesta
        * 
        */
-      static borrarUsuario(id) {
+      static borrarUsuario(id, pool) {
             return new Promise(result => {
                   
                   // ID es NULL porque la base da datos lo asigna como valor autoincremental
