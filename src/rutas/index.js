@@ -8,12 +8,13 @@
 import { Router } from "express";
 import MedicionesControlador from "../controladores/MedicionesControlador.js";
 import UsuariosControlador from "../controladores/UsuariosControlador.js";
+import TipoControlador from "../controladores/TipoControlador.js";
 import "babel-polyfill"; //regeneratorRuntime error fix
 import NodosControlador from "../controladores/NodosControlador.js";
 import {obtenerDatos} from "../controladores/RaspadorControlador";
 import { pool } from "../dbconfig.js";
 import Punto from "../controladores/Punto.js";
-var bodyParser = require("body-parser");
+
 const routes = Router();
 /**
  * 
@@ -210,14 +211,14 @@ routes.post("/medicion", async (request, response) => {
  */
 routes.get("/usuario/:id", async (request, response) => {
   // Recibe las Mediciones
-  const Mediciones = await UsuariosControlador.obtenerUsuario(
+  const usuario = await UsuariosControlador.obtenerUsuario(
     request.params.id,
     pool
   );
   // Se asegura de que no haya errores
-  if (!Mediciones) response.status(404).send(`No hay Mediciones`);
+  if (!usuario) response.status(404).send(`No hay Mediciones`);
   // Devuelve la lista de Mediciones
-  response.send(Mediciones);
+  response.send(usuario);
 });
 
 /**
@@ -316,6 +317,27 @@ routes.post("/nodo", async (request, response) => {
   if (!nodo) response.status(404).send(`No se ha creado el nodo`);
   // Devuelve la lista de sensores
   response.send(nodo);
+});
+
+/**
+ *
+ * Recibe un tipo de la base de datos
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con el tipo
+ *
+ */
+ routes.get("/tipo/:id", async (request, response) => {
+  // Recibe las Mediciones
+  const tipo = await TipoControlador.obtenerTipo(
+    request.params.id,
+    pool
+  );
+  // Se asegura de que no haya errores
+  if (!tipo) response.status(404).send(`No hay tipo con esa ID`);
+  // Devuelve la lista de Mediciones
+  response.send(tipo);
 });
 
 export default routes;

@@ -81,6 +81,17 @@ describe("Main test", function () {
                 done();
             });
     });
+    // ----------------------------------------------
+    it("deberia recibir un solo tipo", (done) => {
+        chai.request(app)
+            .get(`/tipo/${id}`)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('array');
+                res.body[0].should.have.property('ID');
+                done();
+            });
+    });
     // TODO: Estos tests deberian recoger el id del usuario creado anteriormente y modificarlo
     // ----------------------------------------------
     it("deberia recibir un solo usuario", (done) => {
