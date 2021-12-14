@@ -11,7 +11,7 @@ import UsuariosControlador from "../controladores/UsuariosControlador.js";
 import TipoControlador from "../controladores/TipoControlador.js";
 import "babel-polyfill"; //regeneratorRuntime error fix
 import NodosControlador from "../controladores/NodosControlador.js";
-import {obtenerDatos} from "../controladores/RaspadorControlador";
+import {obtenerDatos} from "../controladores/RaspadorControlador.js";
 import { pool } from "../dbconfig.js";
 import Punto from "../controladores/Punto.js";
 

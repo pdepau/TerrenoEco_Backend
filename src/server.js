@@ -6,8 +6,8 @@
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import routes from './rutas/index';
-const cors = require("cors")
+import routes from './rutas/index.js';
+import cors from 'cors';
 // Instantiate express
 const app = express();
 // Set our port

@@ -178,7 +178,6 @@ class MedicionesControlador {
       static interpolarMediciones(mediciones, factor) {
             let interpolados = [];
             let points = [];
-            console.log(mediciones)
             const j_mediciones = JSON.parse(mediciones);
             j_mediciones.forEach(medicion => {
                   points.push([medicion.latitud, medicion.longitud, medicion.valor]);
