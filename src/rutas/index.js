@@ -49,6 +49,39 @@ routes.get("/mediciones", async (request, response) => {
 });
 
 /**
+ * 
+ * Recibe las ultimas Mediciones de un usuario de la base de datos
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * @return {text} JSON con las Mediciones
+ * 
+ * GET /Mediciones
+ * Ejemplo de objeto medicion:
+  {
+    "id":1,
+    "nodo":32,
+    "usuario":1,
+    "tiempo":1635496134293,
+    "tipo":2,
+    "latitud":32.43635,
+    "longitud":-0.3526,
+    "valor":43
+  }
+ */
+  routes.get("/ultimasMediciones/:idUsuario/:cuantas", async (request, response) => {
+    let params = request.params;
+    // Recibe las Mediciones
+    const Mediciones = await MedicionesControlador.obtenerUltimasMedicionesDeUsuario(
+      pool,params.idUsuario,params.cuantas
+    );
+    // Se asegura de que no haya errores
+    if (!Mediciones) response.status(404).send(`No hay Mediciones`);
+    // Devuelve la lista de Mediciones
+    response.send(Mediciones);
+  });
+
+/**
  * Recibe Mediciones acotadas por tiempo y posicion
  *
  * @param {text} URL

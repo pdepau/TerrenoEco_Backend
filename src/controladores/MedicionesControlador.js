@@ -37,6 +37,34 @@ class MedicionesControlador {
       }
 
       /**
+       * getTodasLasMediciones -> [JSON]
+       * Devuelve un JSON con todas las Mediciones
+       *
+       * @param {pool} pool de la base de datos
+       * @return {promise} promesa de los datos
+       * 
+       */
+             static obtenerUltimasMedicionesDeUsuario(pool,idUsuario,cuantas) {
+                  // Recibe las Mediciones
+                  return new Promise(result => {
+      
+                        var queryString = "SELECT * FROM `"+medicion+"` WHERE `usuario`="+idUsuario+" ORDER BY `tiempo` DESC LIMIT "+cuantas;
+      
+                        pool.getConnection((err, connection) => {
+                              if(err) throw err;
+                              console.log('connected as id ' + connection.threadId);
+                              connection.query(queryString, (err, rows) => 
+                              {
+                                    connection.release(); // devuelve la conexion al pool
+                                    // Si hay un error devuelve el error
+                                    if(err) throw err;
+                                    result(rows);
+                              });
+                        });
+                  });
+            }
+
+      /**
        * posicion1:Posicion,
        * posicion2:Posicion,
        * t_inicio:Z,
