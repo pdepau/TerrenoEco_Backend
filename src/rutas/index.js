@@ -98,8 +98,9 @@ routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tie
     "latMin":32,
     "lonMax":1,
     "lonMin":2,
-    "tiempo":1635496134293,
-    "factor":2
+    "tiempoMin":1635496134293,
+    "tiempoMax":1635496134293,
+    "tipo":1
   }
   * el factor funciona bien entre 2 y 10
   Datos devueltos:
@@ -114,13 +115,13 @@ routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tie
   *    valor: 32
   * }]
  */
-routes.get('/mediciones/acotadas/interp', async (request, response) => {
+routes.get('/mediciones/acotadas/interp/:factor', async (request, response) => {
   const json = request.body;
   const puntoMax = new Punto(json.latMax, json.lonMax);
   const puntoMin = new Punto(json.latMin, json.lonMin);
-  const factos = json.factor;
+  const factor = request.params.factor;
   // Recibe las mediciones
-  const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, pool);
+  const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, json.tipo, pool);
   // Se asegura de que no haya errores
   if(!mediciones) response.status(404).send(`No hay Mediciones`);
   const interp = await MedicionesControlador.interpolarMediciones(mediciones, factor);
