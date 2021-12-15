@@ -93,15 +93,15 @@ routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tie
  * 
  * GET /Mediciones/acotadas
  * Envía los datos para la operación de acotado dentro del cuerpo:
-  {
+ * Params:
     "latMax":1,
     "latMin":32,
     "lonMax":1,
     "lonMin":2,
     "tiempoMin":1635496134293,
     "tiempoMax":1635496134293,
+    "factor":2,
     "tipo":1
-  }
   * el factor funciona bien entre 2 y 10
   Datos devueltos:
   * [{
@@ -115,13 +115,13 @@ routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tie
   *    valor: 32
   * }]
  */
-routes.get('/mediciones/acotadas/interp/:factor', async (request, response) => {
-  const json = request.body;
-  const puntoMax = new Punto(json.latMax, json.lonMax);
-  const puntoMin = new Punto(json.latMin, json.lonMin);
-  const factor = request.params.factor;
+routes.get('/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin:/tiempoMin/:tiempoMax/:tipo/:factor', async (request, response) => {
+  const params = request.params;
+  const puntoMax = new Punto(params.latMax, params.lonMax);
+  const puntoMin = new Punto(params.latMin, params.lonMin);
+  const factor = params.factor;
   // Recibe las mediciones
-  const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, json.tiempoMins, json.tiempoMin, json.tipo, pool);
+  const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, params.tiempoMin, params.tiempoMax, params.tipo, pool);
   // Se asegura de que no haya errores
   if(!mediciones) response.status(404).send(`No hay Mediciones`);
   const interp = await MedicionesControlador.interpolarMediciones(mediciones, factor);
