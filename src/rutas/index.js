@@ -73,49 +73,13 @@ routes.get("/mediciones", async (request, response) => {
     let params = request.params;
     // Recibe las Mediciones
     const Mediciones = await MedicionesControlador.obtenerUltimasMedicionesDeUsuario(
-      pool,params.idUsuario,params.cuantas
+      pool,params.idUsuario, params.cuantas
     );
     // Se asegura de que no haya errores
     if (!Mediciones) response.status(404).send(`No hay Mediciones`);
     // Devuelve la lista de Mediciones
     response.send(Mediciones);
   });
-
-/**
- * Recibe Mediciones acotadas por tiempo y posicion
- *
- * @param {text} URL
- * @param {text} callback function
- * @return {text} JSON con las Mediciones
- * 
- * GET /Mediciones/acotadas
- * Envía los datos para la operación de acotado dentro de la url
-    "latMax":1,
-    "latMin":32,
-    "lonMax":1,
-    "lonMin":2,
-    "tiempoMin":1635496134293,
-    "tiempoMax":1635496134293,
-    "tipo":1
- */
-routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tiempoMax/:tipo", async (request, response) => {
-  let params = request.params;
-  let puntoMax = new Punto(parseFloat(params.latMax), parseFloat(params.lonMax));
-  let puntoMin = new Punto(parseFloat(params.latMin), parseFloat(params.lonMin));
-  // Recibe las Mediciones
-  const Mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(
-    puntoMin,
-    puntoMax,
-    parseInt(params.tiempoMin),
-    parseInt(params.tiempoMax),
-    parseInt(params.tipo),
-    pool
-  );
-  // Se asegura de que no haya errores
-  if (!Mediciones) response.status(404).send(`No hay Mediciones`);
-  // Devuelve la lista de Mediciones
-  response.send(Mediciones);
-});
 
 /**
  * Recibe Mediciones acotadas por tiempo y posicion y además interpoladas
@@ -148,15 +112,14 @@ routes.get("/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tie
   *    valor: 32
   * }]
  */
-routes.get('/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin:/tiempoMin/:tiempoMax/:tipo/:factor', async (request, response) => {
+routes.get('/mediciones/acotadas/:latMax/:latMin/:lonMax/:lonMin/:tiempoMin/:tiempoMax/:tipo/:factor', async (request, response) => {
   const params = request.params;
-  const puntoMax = new Punto(params.latMax, params.lonMax);
-  const puntoMin = new Punto(params.latMin, params.lonMin);
-  const factor = params.factor;
+  const puntoMax = new Punto(parseFloat(params.lonMax), parseFloat(params.latMax));
+  const puntoMin = new Punto(parseFloat(params.lonMin), parseFloat(params.latMin));
+  const factor = parseInt(params.factor);
+  const tipo = parseInt(params.tipo);
   // Recibe las mediciones
-  const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, params.tiempoMin, params.tiempoMax, params.tipo, pool);
-  // Se asegura de que no haya errores
-  if(!mediciones) response.status(404).send(`No hay Mediciones`);
+  const mediciones = await MedicionesControlador.obtenerMedicionesAcotadas(puntoMin, puntoMax, params.tiempoMin, params.tiempoMax, tipo, pool);
   const interp = await MedicionesControlador.interpolarMediciones(mediciones, factor);
   // Devuelve la lista de Mediciones
   response.send(interp);

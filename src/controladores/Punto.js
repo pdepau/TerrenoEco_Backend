@@ -11,7 +11,7 @@ class Punto {
      * @param {number} lat del punto
      * @param {number} lon del punto
      */
-    constructor(lat,lon) {
+    constructor(lon, lat) {
         this.lat = lat;
         this.lon = lon;
     }

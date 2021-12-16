@@ -207,8 +207,9 @@ class MedicionesControlador {
       static interpolarMediciones(mediciones, factor) {
             let interpolados = [];
             let points = [];
-            const j_mediciones = JSON.parse(mediciones);
-            j_mediciones.forEach(medicion => {
+            // No es necesario
+            // const j_mediciones = JSON.parse(mediciones);
+            mediciones.forEach(medicion => {
                   points.push([medicion.latitud, medicion.longitud, medicion.valor]);
                   // Insertamos los valores de la entrada en la misma salida
                   interpolados.push({
@@ -220,14 +221,14 @@ class MedicionesControlador {
 
             // Toma valores de las mediciones minimo y maximo para acotar la interpolacion
             // por el factor
-            const LatMax = Math.max.apply(Math, j_mediciones.map(function(o) { return o.latitud; }))
-            const LonMax = Math.max.apply(Math, j_mediciones.map(function(o) { return o.longitud; }))
-            const LatMin = Math.min.apply(Math, j_mediciones.map(function(o) { return o.latitud; }))
-            const LonMin = Math.min.apply(Math, j_mediciones.map(function(o) { return o.longitud; }))
+            const LatMax = Math.max.apply(Math, mediciones.map(function(o) { return o.latitud; }))
+            const LonMax = Math.max.apply(Math, mediciones.map(function(o) { return o.longitud; }))
+            const LatMin = Math.min.apply(Math, mediciones.map(function(o) { return o.latitud; }))
+            const LonMin = Math.min.apply(Math, mediciones.map(function(o) { return o.longitud; }))
 
             // Crea los valores de lat y lon para los datos discretos, el factor es la
             // cantidad de medidas de salida entre medidas de entrada
-            const cantidad = j_mediciones.length * factor;
+            const cantidad = mediciones.length * factor;
             const diferencia = LonMax - LonMin;
 
             const escalon = diferencia/cantidad;
