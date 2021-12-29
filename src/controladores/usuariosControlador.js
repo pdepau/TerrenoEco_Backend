@@ -36,6 +36,37 @@ class usuariosControlador {
                   });
             });
       }
+
+      /**
+       * correo:Texto
+       *                obtenerUsuario()
+       * [JSON] <-
+       * 
+       * Devuelve un JSON con el usuario segun el correo
+       *
+       * @param {pool} pool de la base de datos
+       * @return {promise} promesa de los datos de usuario
+       * 
+       */
+       static obtenerUsuarioCorreo(correo, pool) {
+            return new Promise(result => {
+
+                  var queryString = "SELECT * FROM "+usuario+" WHERE "+usuario+".correo='"+correo+"';";
+
+                  pool.getConnection((err, connection) => {
+                        if(err) throw err;
+                        console.log('connected as id ' + connection.threadId);
+                        connection.query(queryString, (err, rows) => 
+                        {
+                              connection.release(); // devuelve la conexion al pool
+                              // Si hay un error devuelve el error
+                              if(err) throw err;
+                              result(rows);
+                        });
+                  });
+            });
+      }
+
       /**
        *                obtenerUltimoUsuario()
        * Usuario <-

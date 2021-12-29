@@ -199,7 +199,7 @@ routes.post("/medicion", async (request, response) => {
 
 /**
  *
- * Recibe un usuario de la base de datos
+ * Recibe un usuario de la base de datos por la id
  *
  * @param {text} URL
  * @param {text} callback function
@@ -213,7 +213,7 @@ routes.get("/usuario/:id", async (request, response) => {
     pool
   );
   // Se asegura de que no haya errores
-  if (!usuario) response.status(404).send(`No hay Mediciones`);
+  if (!usuario) response.status(404).send(`No hay Usuario`);
   // Devuelve la lista de Mediciones
   response.send(usuario);
 });
@@ -335,6 +335,38 @@ routes.post("/nodo", async (request, response) => {
   if (!tipo) response.status(404).send(`No hay tipo con esa ID`);
   // Devuelve la lista de Mediciones
   response.send(tipo);
+});
+
+/**
+ * Login basico de
+ * https://ull-esit-pl-1617.github.io/estudiar-cookies-y-sessions-en-expressjs-victor-pamela-jesus/cookies/chapter6.html
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * 
+ */
+routes.get('/login', async (req, res) => {
+  // Busca el usuario segun el correo enviado en la peticion
+  let usuario = await UsuariosControlador.obtenerUsuarioCorreo(req.query.username, pool);
+  
+  if (!req.query.username || !req.query.password) {
+    res.send('login failed');
+  } else if(req.query.username === usuario.correo || req.query.password === usuario.password) {
+    res.send('login completed');
+    req.session.user = usuario.correo;
+    req.session.admin = false;
+  }
+});
+
+/**
+ * 
+ * Destruye una sesion
+ * 
+ * @param {text} URL
+ * @param {text} callback function
+ */
+routes.get('/logout', (req, res) => {
+  req.session.destroy();
 });
 
 export default routes;

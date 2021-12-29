@@ -8,6 +8,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import routes from './rutas/index.js';
 import cors from 'cors';
+import session from 'express-session'; //https://www.npmjs.com/package/express-session
 // Instantiate express
 const app = express();
 // Set our port
@@ -15,7 +16,15 @@ const port = process.env.PORT || 8000;
 // Configure app to user bodyParser
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
+app.use( session( {
+    /* Aquí irían los atributos de nuestra sesión, como claves,
+     * cómo se guarda, tiempo de expiración, etc...
+     */
+    secret: 'pdepau',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+  }));
 // Add headers before the routes are defined
 app.use(function (req, res, next) {
 
