@@ -16,14 +16,15 @@
     "babel-node": "0.0.1-security",
     "body-parser": "^1.18.3",
     "cubic-spline": "^3.0.3",
+    "mysql": "^2.18.1",
     "ndarray": "^1.0.19",
     "ndarray-linear-interpolate": "^1.0.0",
     "nodemon": "^2.0.13",
     "nurbs": "^1.1.1",
+    "passport": "^0.5.2",
     "puppeteer": "^11.0.0",
     "split-array": "^1.0.1",
-    "sqlite3": "^5.0.2",
-    "mysql": "^2.18.1"
+    "sqlite3": "^5.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

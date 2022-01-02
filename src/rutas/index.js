@@ -345,16 +345,19 @@ routes.post("/nodo", async (request, response) => {
  * @param {text} callback function
  * 
  */
-routes.get('/login', async (req, res) => {
+routes.post('/login', async (req, res) => {
+  const datos = req.body;
+  console.log(datos);
   // Busca el usuario segun el correo enviado en la peticion
-  let usuario = await UsuariosControlador.obtenerUsuarioCorreo(req.query.username, pool);
-  
-  if (!req.query.username || !req.query.password) {
+  let usuario = await UsuariosControlador.obtenerUsuarioCorreo(datos.correo, pool);
+  console.log("Usuario: " + datos.correo + " intentando conectar.");
+  // TODO: recibe correctamente los datos pero no inicia sesion 
+  if (!datos.correo || !datos.password) {
+    res.status(400);
     res.send('login failed');
-  } else if(req.query.username === usuario.correo || req.query.password === usuario.password) {
-    res.send('login completed');
+  } else if(datos.correo === usuario.correo || datos.password === usuario.password) {
     req.session.user = usuario.correo;
-    req.session.admin = false;
+    res.send('login completed');
   }
 });
 

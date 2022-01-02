@@ -50,7 +50,7 @@ app.use(function (req, res, next) {
 // Register our routes in app
 app.use('/', routes);
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 // Start our server
 app.listen(port, () => {
     console.log(`Servidor escuchando en el puerto ${port}`);
