@@ -16,6 +16,29 @@ import { pool } from "../dbconfig.js";
 import Punto from "../controladores/Punto.js";
 
 const routes = Router();
+
+var sess;
+/**
+ * Comprueba que exista una sesion
+ * https://stackoverflow.com/questions/37608114/how-to-check-session-in-node-js-express/44238319
+ * Desde el frontend puede llamarse la funcion para comprobar que hay una sesion y así
+ * ajustar lo que se necesite
+ * 
+ */
+routes.get('/',function(req,res){
+    sess=req.session;
+    /*
+    * Here we have assign the 'session' to 'sess'.
+    * Now we can create any number of session variable we want.
+    * in PHP we do as $_SESSION['var name'].
+    * Here we do like this.
+    */
+    if(!sess) {
+      res.status(400);
+      return;
+    }
+    sess.username; // usamos el usuario unicamente, que es el correo
+});
 /**
  * 
  * Recibe todas las Mediciones de la base de datos
@@ -167,13 +190,6 @@ routes.get('/estaciones', async (request, response) => {
 
   response.send(datos);
 });
-
-// -----------------------------------------------------------------
-//#endregion
-// -----------------------------------------------------------------
-// -----------------------------------------------------------------
-//#region POST
-// -----------------------------------------------------------------
 /**
  *
  * Envia una medicion a la base de datos para añadirla
