@@ -351,14 +351,19 @@ routes.post('/login', async (req, res) => {
   // Busca el usuario segun el correo enviado en la peticion
   let usuario = await UsuariosControlador.obtenerUsuarioCorreo(datos.correo, pool);
   console.log("Usuario: " + datos.correo + " intentando conectar.");
+  console.log(usuario[0].correo)
   // TODO: recibe correctamente los datos pero no inicia sesion 
   if (!datos.correo || !datos.password) {
     res.status(400);
     res.send('login failed');
-  } else if(datos.correo === usuario.correo || datos.password === usuario.password) {
+    return;
+  } else if(datos.correo == usuario[0].correo && datos.password == usuario[0].password) {
     req.session.user = usuario.correo;
     res.send('login completed');
+    return;
   }
+  res.status(400);
+  res.send('login failed');
 });
 
 /**
