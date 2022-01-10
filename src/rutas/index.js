@@ -12,10 +12,33 @@ import TipoControlador from "../controladores/TipoControlador.js";
 import "babel-polyfill"; //regeneratorRuntime error fix
 import NodosControlador from "../controladores/NodosControlador.js";
 import {obtenerDatos} from "../controladores/RaspadorControlador.js";
-import { pool } from "../dbconfig.js";
+import { pool, usuario } from "../dbconfig.js";
 import Punto from "../controladores/Punto.js";
 
 const routes = Router();
+
+var sess;
+/**
+ * Comprueba que exista una sesion
+ * https://stackoverflow.com/questions/37608114/how-to-check-session-in-node-js-express/44238319
+ * Desde el frontend puede llamarse la funcion para comprobar que hay una sesion y así
+ * ajustar lo que se necesite
+ * 
+ */
+routes.get('/',function(req,res){
+    sess=req.session;
+    /*
+    * Here we have assign the 'session' to 'sess'.
+    * Now we can create any number of session variable we want.
+    * in PHP we do as $_SESSION['var name'].
+    * Here we do like this.
+    */
+    if(!sess) {
+      res.status(400);
+      return;
+    }
+    sess.username; // usamos el usuario unicamente, que es el correo
+});
 /**
  * 
  * Recibe todas las Mediciones de la base de datos
@@ -167,13 +190,6 @@ routes.get('/estaciones', async (request, response) => {
 
   response.send(datos);
 });
-
-// -----------------------------------------------------------------
-//#endregion
-// -----------------------------------------------------------------
-// -----------------------------------------------------------------
-//#region POST
-// -----------------------------------------------------------------
 /**
  *
  * Envia una medicion a la base de datos para añadirla
@@ -345,17 +361,56 @@ routes.post("/nodo", async (request, response) => {
  * @param {text} callback function
  * 
  */
-routes.get('/login', async (req, res) => {
+routes.post('/login', async (req, res) => {
+  const datos = req.body;
+  console.log(datos);
   // Busca el usuario segun el correo enviado en la peticion
-  let usuario = await UsuariosControlador.obtenerUsuarioCorreo(req.query.username, pool);
-  
-  if (!req.query.username || !req.query.password) {
+  let usuario = await UsuariosControlador.obtenerUsuarioCorreo(datos.correo, pool);
+  console.log("Usuario: " + datos.correo + " intentando conectar.");
+  console.log(usuario[0].correo)
+  if (!datos.correo || !datos.password) {
+    res.status(400);
     res.send('login failed');
-  } else if(req.query.username === usuario.correo || req.query.password === usuario.password) {
-    res.send('login completed');
+    return;
+  } else if(datos.correo == usuario[0].correo && datos.password == usuario[0].password) {
     req.session.user = usuario.correo;
-    req.session.admin = false;
+    res.send('login completed');
+    return;
   }
+  res.status(400);
+  res.send('login failed');
+});
+
+/**
+ * Registro basico
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * 
+ */
+ routes.post('/register', async (req, res) => {
+  const datos = req.body;
+  console.log(datos);
+  // Busca el usuario segun el correo enviado en la peticion
+  let usuario = await UsuariosControlador.obtenerUsuarioCorreo(datos.correo, pool);
+  console.log("Usuario: " + datos.correo + " intentando conectar.");
+  console.log(usuario[0].correo)
+  if (!datos.correo || !datos.password) {
+    res.status(400);
+    res.send('register failed');
+    return;
+  } else if(datos.correo == usuario[0].correo && datos.password == usuario[0].password) {
+    let nuevo = "{"+
+            '"correo":"'+usuario[0].correo+'",'+
+            '"password":"'+usuario[0].password+'"'+
+        "}";
+    await UsuariosControlador.crearUsuario(nuevo, pool);
+    req.session.user = usuario.correo;
+    res.send('register completed');
+    return;
+  }
+  res.status(400);
+  res.send('register failed');
 });
 
 /**
