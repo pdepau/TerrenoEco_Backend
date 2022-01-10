@@ -12,7 +12,7 @@ import TipoControlador from "../controladores/TipoControlador.js";
 import "babel-polyfill"; //regeneratorRuntime error fix
 import NodosControlador from "../controladores/NodosControlador.js";
 import {obtenerDatos} from "../controladores/RaspadorControlador.js";
-import { pool } from "../dbconfig.js";
+import { pool, usuario } from "../dbconfig.js";
 import Punto from "../controladores/Punto.js";
 
 const routes = Router();
@@ -368,7 +368,6 @@ routes.post('/login', async (req, res) => {
   let usuario = await UsuariosControlador.obtenerUsuarioCorreo(datos.correo, pool);
   console.log("Usuario: " + datos.correo + " intentando conectar.");
   console.log(usuario[0].correo)
-  // TODO: recibe correctamente los datos pero no inicia sesion 
   if (!datos.correo || !datos.password) {
     res.status(400);
     res.send('login failed');
@@ -380,6 +379,38 @@ routes.post('/login', async (req, res) => {
   }
   res.status(400);
   res.send('login failed');
+});
+
+/**
+ * Registro basico
+ *
+ * @param {text} URL
+ * @param {text} callback function
+ * 
+ */
+ routes.post('/register', async (req, res) => {
+  const datos = req.body;
+  console.log(datos);
+  // Busca el usuario segun el correo enviado en la peticion
+  let usuario = await UsuariosControlador.obtenerUsuarioCorreo(datos.correo, pool);
+  console.log("Usuario: " + datos.correo + " intentando conectar.");
+  console.log(usuario[0].correo)
+  if (!datos.correo || !datos.password) {
+    res.status(400);
+    res.send('register failed');
+    return;
+  } else if(datos.correo == usuario[0].correo && datos.password == usuario[0].password) {
+    let nuevo = "{"+
+            '"correo":"'+usuario[0].correo+'",'+
+            '"password":"'+usuario[0].password+'"'+
+        "}";
+    await UsuariosControlador.crearUsuario(nuevo, pool);
+    req.session.user = usuario.correo;
+    res.send('register completed');
+    return;
+  }
+  res.status(400);
+  res.send('register failed');
 });
 
 /**

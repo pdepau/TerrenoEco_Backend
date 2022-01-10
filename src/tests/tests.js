@@ -34,7 +34,7 @@ describe("Main test", function () {
     it("deberia crear un usuario", (done) => {
         const res = "{"+
             '"telefono":"868493778",'+
-            '"nombre":"Prueba",'+
+            '"correo":"Prueba",'+
             '"password":"1999"'+
         "}";
         chai.request(app)
@@ -110,7 +110,7 @@ describe("Main test", function () {
         const res = "{"+
             '"id":"1",'+
             '"telefono":"5666",'+
-            '"nombre":"Modificado",'+
+            '"correo":"Modificado",'+
             '"password":"26472"'+
         "}";
         chai.request(app)
