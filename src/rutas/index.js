@@ -382,7 +382,7 @@ routes.post('/login', async (req, res) => {
 });
 
 /**
- * Registro basico
+ * Registro de usuario basico
  *
  * @param {text} URL
  * @param {text} callback function
