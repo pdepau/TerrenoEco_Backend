@@ -218,7 +218,10 @@ class MedicionesControlador {
                         valor: medicion.valor
                   })
             });
-
+            // Si el factor es 0 no interpola nada
+            if(factor == 0) {
+                  return(interpolados);
+            }
             // Toma valores de las mediciones minimo y maximo para acotar la interpolacion
             // por el factor
             const LatMax = Math.max.apply(Math, mediciones.map(function(o) { return o.latitud; }))
